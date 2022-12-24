@@ -8,6 +8,7 @@
 #include <coral/error.h>
 #include <coral/linked_queue.h>
 #include <coral/linked_red_black_tree_set.h>
+#include <coral/linked_stack.h>
 #include <coral/red_black_tree_map.h>
 #include <coral/red_black_tree_set.h>
 

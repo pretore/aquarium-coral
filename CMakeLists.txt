@@ -18,6 +18,7 @@ set(EXPORTED_HEADER_FILES
         include/coral/error.h
         include/coral/linked_queue.h
         include/coral/linked_red_black_tree_set.h
+        include/coral/linked_stack.h
         include/coral/red_black_tree_map.h
         include/coral/red_black_tree_set.h
         include/coral.h)
@@ -27,6 +28,7 @@ set(SOURCES
         src/error.c
         src/linked_queue.c
         src/linked_red_black_tree_set.c
+        src/linked_stack.c
         src/red_black_tree_map.c
         src/red_black_tree_set.c)
 
@@ -110,6 +112,17 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
                 ${PROJECT_NAME})
     add_test(${PROJECT_NAME}-linked-queue-unit-test
             ${PROJECT_NAME}-linked-queue-unit-test)
+    # aquarium-coral-linked-stack-unit-test
+    add_executable(${PROJECT_NAME}-linked-stack-unit-test
+            test/test_linked_stack.c)
+    target_include_directories(${PROJECT_NAME}-linked-stack-unit-test
+            PRIVATE
+                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
+    target_link_libraries(${PROJECT_NAME}-linked-stack-unit-test
+            PRIVATE
+                ${PROJECT_NAME})
+    add_test(${PROJECT_NAME}-linked-stack-unit-test
+            ${PROJECT_NAME}-linked-stack-unit-test)
 else()
     add_library(${PROJECT_NAME} "")
     target_sources(${PROJECT_NAME}

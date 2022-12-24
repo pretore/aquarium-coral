@@ -20,3 +20,4 @@ backed set_
 - ``coral_linked_queue`` - _linked list backed queue_
 
 ### stack
+- ``coral_linked_stack`` - _linked list backed stack_
