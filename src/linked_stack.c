@@ -76,6 +76,20 @@ bool coral_linked_stack_size(const struct coral_linked_stack *const object,
     return true;
 }
 
+bool coral_linked_stack_count(const struct coral_linked_stack *const object,
+                             size_t *const out) {
+    if (!object) {
+        coral_error = CORAL_LINKED_STACK_ERROR_OBJECT_IS_NULL;
+        return false;
+    }
+    if (!out) {
+        coral_error = CORAL_LINKED_STACK_ERROR_OUT_IS_NULL;
+        return false;
+    }
+    *out = object->count;
+    return true;
+}
+
 bool coral_linked_stack_push(struct coral_linked_stack *const object,
                              const void *const item) {
     if (!object) {
@@ -104,6 +118,8 @@ bool coral_linked_stack_push(struct coral_linked_stack *const object,
                 fl_node, object->top));
     }
     object->top = fl_node;
+    seagrass_required_true(seagrass_uintmax_t_add(
+            1, object->count, &object->count));
     return true;
 }
 
@@ -127,6 +143,8 @@ bool coral_linked_stack_pop(struct coral_linked_stack *const object,
                                == rock_error);
         object->top = NULL;
     }
+    seagrass_required_true(seagrass_uintmax_t_subtract(
+            object->count, 1, &object->count));
     memcpy(out, &item->data, object->size);
     free(item);
     return true;

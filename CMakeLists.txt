@@ -15,6 +15,7 @@ include(cmake/FetchAquariumRock.cmake)
 
 # Sources
 set(EXPORTED_HEADER_FILES
+        include/coral/array_list.h
         include/coral/error.h
         include/coral/linked_queue.h
         include/coral/linked_red_black_tree_set.h
@@ -24,6 +25,7 @@ set(EXPORTED_HEADER_FILES
         include/coral.h)
 set(SOURCES
         ${EXPORTED_HEADER_FILES}
+        src/array_list.c
         src/coral.c
         src/error.c
         src/linked_queue.c
@@ -123,6 +125,17 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
                 ${PROJECT_NAME})
     add_test(${PROJECT_NAME}-linked-stack-unit-test
             ${PROJECT_NAME}-linked-stack-unit-test)
+    # aquarium-coral-array-list-unit-test
+    add_executable(${PROJECT_NAME}-array-list-unit-test
+            test/test_array_list.c)
+    target_include_directories(${PROJECT_NAME}-array-list-unit-test
+            PRIVATE
+                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
+    target_link_libraries(${PROJECT_NAME}-array-list-unit-test
+            PRIVATE
+                ${PROJECT_NAME})
+    add_test(${PROJECT_NAME}-array-list-unit-test
+            ${PROJECT_NAME}-array-list-unit-test)
 else()
     add_library(${PROJECT_NAME} "")
     target_sources(${PROJECT_NAME}

@@ -2,22 +2,23 @@
 
 ![main](https://github.com/pretore/aquarium-coral/actions/workflows/cmake.yml/badge.svg?branch=main)
 
-Data structures in C.
+Abstract data structures in C.
 
-### array
+### [array](https://en.wikipedia.org/wiki/Array_(data_type))
 
-### list
+### [list](https://en.wikipedia.org/wiki/List_(abstract_data_type))
+- ``coral_array_list`` - [dynamic array](https://en.wikipedia.org/wiki/Dynamic_array).
 
-### map
-- ``coral_red_black_tree_map`` - _red-black tree backed key-value map_
+### [map](https://en.wikipedia.org/wiki/Associative_array)
+- ``coral_red_black_tree_map`` - _red-black tree backed key-value map._
 
-### set
-- ``coral_red_black_tree_set`` - _red-black tree backed set_
-- ``coral_linked_red_black_tree_set`` - _insertion ordered red-black tree 
-backed set_
+### [set](https://en.wikipedia.org/wiki/Set_(abstract_data_type))
+- ``coral_red_black_tree_set`` - _red-black tree backed set._
+- ``coral_linked_red_black_tree_set`` - _red-black tree backed set which 
+  also tracks insertion order._
 
-### queue
-- ``coral_linked_queue`` - _linked list backed queue_
+### [queue](https://en.wikipedia.org/wiki/Queue_(abstract_data_type))
+- ``coral_linked_queue`` - _linked list backed queue._
 
-### stack
-- ``coral_linked_stack`` - _linked list backed stack_
+### [stack](https://en.wikipedia.org/wiki/Stack_(abstract_data_type))
+- ``coral_linked_stack`` - _linked list backed stack._

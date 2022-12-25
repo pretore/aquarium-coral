@@ -20,6 +20,7 @@ struct coral_linked_queue {
     struct rock_forward_list_node *tail;
     size_t size;
     size_t alloc;
+    uintmax_t count;
 };
 
 /**
@@ -57,6 +58,17 @@ bool coral_linked_queue_invalidate(struct coral_linked_queue *object,
  */
 bool coral_linked_queue_size(const struct coral_linked_queue *object,
                              size_t *out);
+
+/**
+ * @brief Retrieve the count of items.
+ * @param [in] object instance whose count we are to retrieve.
+ * @param [out] out receive the count.
+ * @return On success true, otherwise false if an error has occurred.
+ * @throws CORAL_LINKED_QUEUE_ERROR_OBJECT_IS_NULL if object is <i>NULL</i>.
+ * @throws CORAL_LINKED_QUEUE_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
+ */
+bool coral_linked_queue_count(const struct coral_linked_queue *object,
+                              size_t *out);
 
 /**
  * @brief Add item to the end of the queue.

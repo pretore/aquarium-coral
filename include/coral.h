@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include <coral/array_list.h>
 #include <coral/error.h>
 #include <coral/linked_queue.h>
 #include <coral/linked_red_black_tree_set.h>

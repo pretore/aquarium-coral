@@ -47,6 +47,9 @@ static void check_init(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_queue object;
     assert_true(coral_linked_queue_init(&object, sizeof(uintmax_t)));
+    assert_int_equal(object.count, 0);
+    assert_null(object.head);
+    assert_null(object.tail);
     assert_true(coral_linked_queue_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -74,6 +77,33 @@ static void check_size(void **state) {
     size_t out = 0;
     assert_true(coral_linked_queue_size(&object, &out));
     assert_int_equal(out, SIZE);
+    assert_true(coral_linked_queue_invalidate(&object, NULL));
+    coral_error = CORAL_ERROR_NONE;
+}
+
+static void check_count_error_on_object_is_null(void **state) {
+    coral_error = CORAL_ERROR_NONE;
+    assert_false(coral_linked_queue_count(NULL, (void *)1));
+    assert_int_equal(CORAL_LINKED_QUEUE_ERROR_OBJECT_IS_NULL, coral_error);
+    coral_error = CORAL_ERROR_NONE;
+}
+
+static void check_count_error_on_out_is_null(void **state) {
+    coral_error = CORAL_ERROR_NONE;
+    assert_false(coral_linked_queue_count((void *)1, NULL));
+    assert_int_equal(CORAL_LINKED_QUEUE_ERROR_OUT_IS_NULL, coral_error);
+    coral_error = CORAL_ERROR_NONE;
+}
+
+static void check_count(void **state) {
+    srand(time(NULL));
+    coral_error = CORAL_ERROR_NONE;
+    struct coral_linked_queue object;
+    assert_true(coral_linked_queue_init(&object, sizeof(void *)));
+    object.count = rand() % UINTMAX_MAX;
+    uintmax_t out = 0;
+    assert_true(coral_linked_queue_count(&object, &out));
+    assert_int_equal(out, object.count);
     assert_true(coral_linked_queue_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -116,9 +146,11 @@ static void check_add(void **state) {
     assert_true(coral_linked_queue_add(&object, &value));
     assert_non_null(object.head);
     assert_ptr_equal(object.head, object.tail);
+    assert_int_equal(object.count, 1);
     assert_true(coral_linked_queue_add(&object, &value));
     assert_non_null(object.head);
     assert_ptr_not_equal(object.head, object.tail);
+    assert_int_equal(object.count, 2);
     assert_true(coral_linked_queue_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -162,17 +194,21 @@ static void check_remove(void **state) {
     };
     const size_t limit = sizeof(value) / sizeof(uintmax_t);
     for (uintmax_t i = 0; i < limit; i++) {
+        assert_int_equal(object.count, i);
         assert_true(coral_linked_queue_add(&object, &value[i]));
+        assert_int_equal(object.count, 1 + i);
     }
     uintmax_t out;
     for (uintmax_t i = 0; i < limit; i++) {
         assert_non_null(object.head);
         assert_non_null(object.tail);
+        assert_int_equal(object.count, limit - i);
         assert_true(coral_linked_queue_remove(&object, (void **) &out));
         assert_int_equal(out, value[i]);
     }
     assert_null(object.head);
     assert_null(object.tail);
+    assert_int_equal(object.count, 0);
     assert_true(coral_linked_queue_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -224,6 +260,7 @@ static void check_peek(void **state) {
     }
     assert_non_null(object.head);
     assert_non_null(object.tail);
+    assert_int_equal(object.count, limit);
     assert_true(coral_linked_queue_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -239,6 +276,9 @@ int main(int argc, char *argv[]) {
             cmocka_unit_test(check_size_error_on_object_is_null),
             cmocka_unit_test(check_size_error_on_out_is_null),
             cmocka_unit_test(check_size),
+            cmocka_unit_test(check_count_error_on_object_is_null),
+            cmocka_unit_test(check_count_error_on_out_is_null),
+            cmocka_unit_test(check_count),
             cmocka_unit_test(check_add_error_on_object_is_null),
             cmocka_unit_test(check_add_error_on_item_is_null),
             cmocka_unit_test(check_add_error_on_memory_allocation_failed),

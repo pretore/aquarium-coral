@@ -19,6 +19,7 @@ struct coral_linked_stack {
     struct rock_forward_list_node *top;
     size_t size;
     size_t alloc;
+    uintmax_t count;
 };
 
 /**
@@ -57,6 +58,17 @@ bool coral_linked_stack_invalidate(struct coral_linked_stack *object,
  */
 bool coral_linked_stack_size(const struct coral_linked_stack *object,
                              size_t *out);
+
+/**
+ * @brief Retrieve the count of items.
+ * @param [in] object instance whose count we are to retrieve.
+ * @param [out] out receive the count.
+ * @return On success true, otherwise false if an error has occurred.
+ * @throws CORAL_LINKED_STACK_ERROR_OBJECT_IS_NULL if object is <i>NULL</i>.
+ * @throws CORAL_LINKED_STACK_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
+ */
+bool coral_linked_stack_count(const struct coral_linked_stack *object,
+                              size_t *out);
 
 /**
  * @brief Add item to the top of the stack.
