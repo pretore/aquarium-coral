@@ -68,7 +68,7 @@ bool coral_linked_queue_size(const struct coral_linked_queue *object,
  * @throws CORAL_LINKED_QUEUE_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  */
 bool coral_linked_queue_count(const struct coral_linked_queue *object,
-                              size_t *out);
+                              uintmax_t *out);
 
 /**
  * @brief Add item to the end of the queue.

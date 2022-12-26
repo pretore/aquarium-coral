@@ -77,7 +77,7 @@ bool coral_linked_stack_size(const struct coral_linked_stack *const object,
 }
 
 bool coral_linked_stack_count(const struct coral_linked_stack *const object,
-                             size_t *const out) {
+                             uintmax_t *const out) {
     if (!object) {
         coral_error = CORAL_LINKED_STACK_ERROR_OBJECT_IS_NULL;
         return false;

@@ -77,7 +77,7 @@ bool coral_linked_queue_size(const struct coral_linked_queue *const object,
 }
 
 bool coral_linked_queue_count(const struct coral_linked_queue *const object,
-                              size_t *const out) {
+                              uintmax_t *const out) {
     if (!object) {
         coral_error = CORAL_LINKED_QUEUE_ERROR_OBJECT_IS_NULL;
         return false;

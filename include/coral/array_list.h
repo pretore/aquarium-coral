@@ -23,8 +23,8 @@ struct coral_array_list {
 };
 
 /**
- * @brief Initialise array list.
- * @param [in] object instance to be initialised.
+ * @brief Initialize array list.
+ * @param [in] object instance to be initialized.
  * @param [in] size of an item in the array list.
  * @param [in] capacity set the initial capacity.
  * @return On success true, otherwise false if an error has occurred.

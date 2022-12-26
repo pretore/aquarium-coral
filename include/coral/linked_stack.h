@@ -68,7 +68,7 @@ bool coral_linked_stack_size(const struct coral_linked_stack *object,
  * @throws CORAL_LINKED_STACK_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  */
 bool coral_linked_stack_count(const struct coral_linked_stack *object,
-                              size_t *out);
+                              uintmax_t *out);
 
 /**
  * @brief Add item to the top of the stack.
