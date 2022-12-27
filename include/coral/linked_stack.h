@@ -13,7 +13,7 @@ struct rock_forward_list_node;
 #define CORAL_LINKED_STACK_ERROR_OUT_IS_NULL                    4
 #define CORAL_LINKED_STACK_ERROR_MEMORY_ALLOCATION_FAILED       5
 #define CORAL_LINKED_STACK_ERROR_ITEM_IS_NULL                   6
-#define CORAL_LINKED_STACK_ERROR_QUEUE_IS_EMPTY                 7
+#define CORAL_LINKED_STACK_ERROR_STACK_IS_EMPTY                 7
 
 struct coral_linked_stack {
     struct rock_forward_list_node *top;
@@ -90,7 +90,7 @@ bool coral_linked_stack_push(struct coral_linked_stack *object,
  * @return On success true, otherwise false if an error has occurred.
  * @throws CORAL_LINKED_STACK_ERROR_OBJECT_IS_NULL if object is <i>NULL</i>.
  * @throws CORAL_LINKED_STACK_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
- * @throws CORAL_LINKED_STACK_ERROR_QUEUE_IS_EMPTY if stack is empty.
+ * @throws CORAL_LINKED_STACK_ERROR_STACK_IS_EMPTY if stack is empty.
  */
 bool coral_linked_stack_pop(struct coral_linked_stack *object,
                             void **out);
@@ -103,7 +103,7 @@ bool coral_linked_stack_pop(struct coral_linked_stack *object,
  * @return On success true, otherwise false if an error has occurred.
  * @throws CORAL_LINKED_STACK_ERROR_OBJECT_IS_NULL if object is <i>NULL</i>.
  * @throws CORAL_LINKED_STACK_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
- * @throws CORAL_LINKED_STACK_ERROR_QUEUE_IS_EMPTY if stack is empty.
+ * @throws CORAL_LINKED_STACK_ERROR_STACK_IS_EMPTY if stack is empty.
  */
 bool coral_linked_stack_peek(const struct coral_linked_stack *object,
                              void **out);

@@ -134,7 +134,7 @@ bool coral_linked_stack_pop(struct coral_linked_stack *const object,
         return false;
     }
     if (!object->top) {
-        coral_error = CORAL_LINKED_STACK_ERROR_QUEUE_IS_EMPTY;
+        coral_error = CORAL_LINKED_STACK_ERROR_STACK_IS_EMPTY;
         return false;
     }
     struct node *item = rock_container_of(object->top, struct node, node);
@@ -161,7 +161,7 @@ bool coral_linked_stack_peek(const struct coral_linked_stack *const object,
         return false;
     }
     if (!object->top) {
-        coral_error = CORAL_LINKED_STACK_ERROR_QUEUE_IS_EMPTY;
+        coral_error = CORAL_LINKED_STACK_ERROR_STACK_IS_EMPTY;
         return false;
     }
     struct node *item = rock_container_of(object->top, struct node, node);

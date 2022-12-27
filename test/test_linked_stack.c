@@ -164,13 +164,13 @@ static void check_pop_error_on_out_is_null(void **state) {
     coral_error = CORAL_ERROR_NONE;
 }
 
-static void check_pop_error_on_queue_is_empty(void **state) {
+static void check_pop_error_on_stack_is_empty(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_stack object;
     assert_true(coral_linked_stack_init(&object, sizeof(uintmax_t)));
     uintmax_t out;
     assert_false(coral_linked_stack_pop(&object, (void **) &out));
-    assert_int_equal(CORAL_LINKED_STACK_ERROR_QUEUE_IS_EMPTY, coral_error);
+    assert_int_equal(CORAL_LINKED_STACK_ERROR_STACK_IS_EMPTY, coral_error);
     assert_true(coral_linked_stack_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -221,13 +221,13 @@ static void check_peek_error_on_out_is_null(void **state) {
     coral_error = CORAL_ERROR_NONE;
 }
 
-static void check_peek_error_on_queue_is_empty(void **state) {
+static void check_peek_error_on_stack_is_empty(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_stack object;
     assert_true(coral_linked_stack_init(&object, sizeof(uintmax_t)));
     uintmax_t out;
     assert_false(coral_linked_stack_peek(&object, (void **) &out));
-    assert_int_equal(CORAL_LINKED_STACK_ERROR_QUEUE_IS_EMPTY, coral_error);
+    assert_int_equal(CORAL_LINKED_STACK_ERROR_STACK_IS_EMPTY, coral_error);
     assert_true(coral_linked_stack_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -277,11 +277,11 @@ int main(int argc, char *argv[]) {
             cmocka_unit_test(check_push),
             cmocka_unit_test(check_pop_error_on_object_is_null),
             cmocka_unit_test(check_pop_error_on_out_is_null),
-            cmocka_unit_test(check_pop_error_on_queue_is_empty),
+            cmocka_unit_test(check_pop_error_on_stack_is_empty),
             cmocka_unit_test(check_pop),
             cmocka_unit_test(check_peek_error_on_object_is_null),
             cmocka_unit_test(check_peek_error_on_out_is_null),
-            cmocka_unit_test(check_peek_error_on_queue_is_empty),
+            cmocka_unit_test(check_peek_error_on_stack_is_empty),
             cmocka_unit_test(check_peek),
     };
     //cmocka_set_message_output(CM_OUTPUT_XML);
