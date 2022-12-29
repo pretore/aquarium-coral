@@ -118,6 +118,8 @@ bool coral_red_black_tree_set_add(struct coral_red_black_tree_set *object,
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_VALUE_IS_NULL if value is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_VALUE_NOT_FOUND if value is not in the
  * tree set instance.
+ * @throws CORAL_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find item for removal.
  */
 bool coral_red_black_tree_set_remove(struct coral_red_black_tree_set *object,
                                      const void *value);
@@ -132,6 +134,8 @@ bool coral_red_black_tree_set_remove(struct coral_red_black_tree_set *object,
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_VALUE_IS_NULL if value is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
+ * @throws CORAL_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find item.
  */
 bool coral_red_black_tree_set_contains(
         const struct coral_red_black_tree_set *object,
@@ -150,6 +154,8 @@ bool coral_red_black_tree_set_contains(
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_ITEM_NOT_FOUND if there is no
  * item that matched value.
+ * @throws CORAL_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find item.
  */
 bool coral_red_black_tree_set_get(const struct coral_red_black_tree_set *object,
                                   const void *value,
@@ -167,11 +173,13 @@ bool coral_red_black_tree_set_get(const struct coral_red_black_tree_set *object,
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_ITEM_NOT_FOUND if no item matched
  * value or a higher value.
+ * @throws CORAL_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find item.
  */
-bool
-coral_red_black_tree_set_ceiling(const struct coral_red_black_tree_set *object,
-                                 const void *value,
-                                 const void **out);
+bool coral_red_black_tree_set_ceiling(
+        const struct coral_red_black_tree_set *object,
+        const void *value,
+        const void **out);
 
 /**
  * @brief Retrieve item for value or the next lower value.
@@ -185,11 +193,13 @@ coral_red_black_tree_set_ceiling(const struct coral_red_black_tree_set *object,
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_ITEM_NOT_FOUND if no item matched
  * value or a lower value.
+ * @throws CORAL_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find item.
  */
-bool
-coral_red_black_tree_set_floor(const struct coral_red_black_tree_set *object,
-                               const void *value,
-                               const void **out);
+bool coral_red_black_tree_set_floor(
+        const struct coral_red_black_tree_set *object,
+        const void *value,
+        const void **out);
 
 /**
  * @brief Retrieve item for next higher value.
@@ -203,11 +213,13 @@ coral_red_black_tree_set_floor(const struct coral_red_black_tree_set *object,
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_ITEM_NOT_FOUND if there is no
  * greater value.
+ * @throws CORAL_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find item.
  */
-bool
-coral_red_black_tree_set_higher(const struct coral_red_black_tree_set *object,
-                                const void *value,
-                                const void **out);
+bool coral_red_black_tree_set_higher(
+        const struct coral_red_black_tree_set *object,
+        const void *value,
+        const void **out);
 
 /**
  * @brief Retrieve item for the next lower value.
@@ -221,11 +233,13 @@ coral_red_black_tree_set_higher(const struct coral_red_black_tree_set *object,
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_ITEM_NOT_FOUND if there is no lower
  * value.
+ * @throws CORAL_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find item.
  */
-bool
-coral_red_black_tree_set_lower(const struct coral_red_black_tree_set *object,
-                               const void *value,
-                               const void **out);
+bool coral_red_black_tree_set_lower(
+        const struct coral_red_black_tree_set *object,
+        const void *value,
+        const void **out);
 
 /**
  * @brief First item of the tree set.
@@ -237,9 +251,9 @@ coral_red_black_tree_set_lower(const struct coral_red_black_tree_set *object,
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_SET_IS_EMPTY if tree set is empty.
  */
-bool
-coral_red_black_tree_set_first(const struct coral_red_black_tree_set *object,
-                               const void **out);
+bool coral_red_black_tree_set_first(
+        const struct coral_red_black_tree_set *object,
+        const void **out);
 
 /**
  * @brief Last item of the tree set.
@@ -251,9 +265,9 @@ coral_red_black_tree_set_first(const struct coral_red_black_tree_set *object,
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_SET_IS_EMPTY if tree set is empty.
  */
-bool
-coral_red_black_tree_set_last(const struct coral_red_black_tree_set *object,
-                              const void **out);
+bool coral_red_black_tree_set_last(
+        const struct coral_red_black_tree_set *object,
+        const void **out);
 
 /**
  * @brief Remove item.
@@ -264,9 +278,9 @@ coral_red_black_tree_set_last(const struct coral_red_black_tree_set *object,
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_SET_ERROR_ITEM_IS_NULL if item is <i>NULL</i>.
  */
-bool
-coral_red_black_tree_set_remove_item(struct coral_red_black_tree_set *object,
-                                     const void *item);
+bool coral_red_black_tree_set_remove_item(
+        struct coral_red_black_tree_set *object,
+        const void *item);
 
 /**
  * @brief Retrieve next item.

@@ -67,9 +67,10 @@ static void check_init_error_on_compare_is_null(void **state) {
 static void check_init(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     assert_int_equal(object.size, sizeof(uintptr_t));
     assert_ptr_equal(object.compare, compare_uintptr_t);
     assert_null(object.list);
@@ -169,9 +170,10 @@ static void check_add(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     assert_int_equal(0, object.tree.count);
     assert_null(object.tree.root);
     assert_null(object.list);
@@ -194,9 +196,10 @@ static void check_add_error_on_item_already_exists(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     assert_int_equal(0, object.tree.count);
     assert_null(object.tree.root);
     uintptr_t value = (rand() % UINTPTR_MAX);
@@ -232,9 +235,10 @@ static void check_remove_error_on_item_not_found(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     for (uintmax_t i = 0; i < 10; i++, value++) {
         assert_true(coral_linked_red_black_tree_set_add(&object, &value));
@@ -250,9 +254,10 @@ static void check_remove(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     assert_int_equal(0, object.tree.count);
     const uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
@@ -261,6 +266,31 @@ static void check_remove(void **state) {
     assert_true(coral_linked_red_black_tree_set_remove(&object, &value));
     assert_int_equal(0, object.tree.count);
     assert_null(object.list);
+    assert_true(coral_linked_red_black_tree_set_invalidate(&object, NULL));
+    coral_error = CORAL_ERROR_NONE;
+}
+
+static void check_remove_error_on_memory_allocation_failed(void **state) {
+    srand(time(NULL));
+    coral_error = CORAL_ERROR_NONE;
+    struct coral_linked_red_black_tree_set object;
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
+    assert_int_equal(0, object.tree.count);
+    const uintptr_t value = (rand() % UINTPTR_MAX);
+    assert_true(coral_linked_red_black_tree_set_add(&object, &value));
+    assert_int_equal(1, object.tree.count);
+    assert_non_null(object.list);
+    malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
+            = posix_memalign_is_overridden = true;
+    assert_false(coral_linked_red_black_tree_set_remove(&object, &value));
+    malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
+            = posix_memalign_is_overridden = false;
+    assert_int_equal(
+            CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED,
+            coral_error);
     assert_true(coral_linked_red_black_tree_set_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -296,9 +326,10 @@ static void check_contains(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     bool result;
     const uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_contains(
@@ -308,6 +339,29 @@ static void check_contains(void **state) {
     assert_true(coral_linked_red_black_tree_set_contains(
             &object, &value, &result));
     assert_true(result);
+    assert_true(coral_linked_red_black_tree_set_invalidate(&object, NULL));
+    coral_error = CORAL_ERROR_NONE;
+}
+
+static void check_contains_error_on_memory_allocation_failed(void **state) {
+    srand(time(NULL));
+    coral_error = CORAL_ERROR_NONE;
+    struct coral_linked_red_black_tree_set object;
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
+    bool result;
+    const uintptr_t value = (rand() % UINTPTR_MAX);
+    malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
+            = posix_memalign_is_overridden = true;
+    assert_false(coral_linked_red_black_tree_set_contains(
+            &object, &value, &result));
+    malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
+            = posix_memalign_is_overridden = false;
+    assert_int_equal(
+            CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED,
+            coral_error);
     assert_true(coral_linked_red_black_tree_set_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -343,9 +397,10 @@ static void check_get_error_on_item_not_found(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t *item;
     const uintptr_t value = (rand() % UINTPTR_MAX);
     assert_false(coral_linked_red_black_tree_set_get(
@@ -360,9 +415,10 @@ static void check_get(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t *item;
     const uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
@@ -370,6 +426,30 @@ static void check_get(void **state) {
             &object, &value, (const void **) &item));
     assert_ptr_not_equal(item, &value);
     assert_int_equal(*item, value);
+    assert_true(coral_linked_red_black_tree_set_invalidate(&object, NULL));
+    coral_error = CORAL_ERROR_NONE;
+}
+
+static void check_get_error_on_memory_allocation_failed(void **state) {
+    srand(time(NULL));
+    coral_error = CORAL_ERROR_NONE;
+    struct coral_linked_red_black_tree_set object;
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
+    const uintptr_t *item;
+    const uintptr_t value = (rand() % UINTPTR_MAX);
+    assert_true(coral_linked_red_black_tree_set_add(&object, &value));
+    malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
+            = posix_memalign_is_overridden = true;
+    assert_false(coral_linked_red_black_tree_set_get(
+            &object, &value, (const void **) &item));
+    malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
+            = posix_memalign_is_overridden = false;
+    assert_int_equal(
+            CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED,
+            coral_error);
     assert_true(coral_linked_red_black_tree_set_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -404,9 +484,10 @@ static void check_ceiling_error_on_out_is_null(void **state) {
 static void check_ceiling_error_on_item_not_found(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t *item;
     uintptr_t value = 100;
     assert_false(coral_linked_red_black_tree_set_ceiling(
@@ -426,9 +507,10 @@ static void check_ceiling_error_on_item_not_found(void **state) {
 static void check_ceiling(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t *item;
     uintptr_t value = 100;
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
@@ -441,6 +523,29 @@ static void check_ceiling(void **state) {
     assert_true(coral_linked_red_black_tree_set_ceiling(
             &object, &value, (const void **) &item));
     assert_int_equal(*item, check);
+    assert_true(coral_linked_red_black_tree_set_invalidate(&object, NULL));
+    coral_error = CORAL_ERROR_NONE;
+}
+
+static void check_ceiling_error_on_memory_allocation_failed(void **state) {
+    coral_error = CORAL_ERROR_NONE;
+    struct coral_linked_red_black_tree_set object;
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
+    const uintptr_t *item;
+    uintptr_t value = 100;
+    assert_true(coral_linked_red_black_tree_set_add(&object, &value));
+    malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
+            = posix_memalign_is_overridden = true;
+    assert_false(coral_linked_red_black_tree_set_ceiling(
+            &object, &value, (const void **) &item));
+    malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
+            = posix_memalign_is_overridden = false;
+    assert_int_equal(
+            CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED,
+            coral_error);
     assert_true(coral_linked_red_black_tree_set_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -475,9 +580,10 @@ static void check_floor_error_on_out_is_null(void **state) {
 static void check_floor_error_on_item_not_found(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t *item;
     uintptr_t value = 100;
     assert_false(coral_linked_red_black_tree_set_floor(
@@ -497,9 +603,10 @@ static void check_floor_error_on_item_not_found(void **state) {
 static void check_floor(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t *item;
     uintptr_t value = 100;
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
@@ -514,6 +621,29 @@ static void check_floor(void **state) {
             &object, &value, (const void **) &item));
     assert_ptr_not_equal(item, &check);
     assert_int_equal(*item, check);
+    assert_true(coral_linked_red_black_tree_set_invalidate(&object, NULL));
+    coral_error = CORAL_ERROR_NONE;
+}
+
+static void check_floor_error_on_memory_allocation_failed(void **state) {
+    coral_error = CORAL_ERROR_NONE;
+    struct coral_linked_red_black_tree_set object;
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
+    const uintptr_t *item;
+    uintptr_t value = 100;
+    assert_true(coral_linked_red_black_tree_set_add(&object, &value));
+    malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
+            = posix_memalign_is_overridden = true;
+    assert_false(coral_linked_red_black_tree_set_floor(
+            &object, &value, (const void **) &item));
+    malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
+            = posix_memalign_is_overridden = false;
+    assert_int_equal(
+            CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED,
+            coral_error);
     assert_true(coral_linked_red_black_tree_set_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -549,9 +679,10 @@ static void check_higher_error_on_item_not_found(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t *item;
     const uintptr_t value = (rand() % UINTPTR_MAX);
     assert_false(coral_linked_red_black_tree_set_higher(
@@ -570,9 +701,10 @@ static void check_higher_error_on_item_not_found(void **state) {
 static void check_higher(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t *item;
     uintptr_t value = 100;
     uintptr_t check = 234;
@@ -594,6 +726,30 @@ static void check_higher(void **state) {
             &object, &value, (const void **) &item));
     assert_ptr_not_equal(item, &check);
     assert_int_equal(*item, check);
+    assert_true(coral_linked_red_black_tree_set_invalidate(&object, NULL));
+    coral_error = CORAL_ERROR_NONE;
+}
+
+static void check_higher_error_on_memory_allocation_failed(void **state) {
+    coral_error = CORAL_ERROR_NONE;
+    struct coral_linked_red_black_tree_set object;
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
+    const uintptr_t *item;
+    uintptr_t value = 100;
+    uintptr_t check = 234;
+    assert_true(coral_linked_red_black_tree_set_add(&object, &check));
+    malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
+            = posix_memalign_is_overridden = true;
+    assert_false(coral_linked_red_black_tree_set_higher(
+            &object, &value, (const void **) &item));
+    malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
+            = posix_memalign_is_overridden = false;
+    assert_int_equal(
+            CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED,
+            coral_error);
     assert_true(coral_linked_red_black_tree_set_invalidate(&object, NULL));
     coral_error = CORAL_ERROR_NONE;
 }
@@ -629,9 +785,10 @@ static void check_lower_error_on_item_not_found(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t *item;
     const uintptr_t value = (rand() % UINTPTR_MAX);
     assert_false(coral_linked_red_black_tree_set_lower(
@@ -650,9 +807,10 @@ static void check_lower_error_on_item_not_found(void **state) {
 static void check_lower(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t *item;
     uintptr_t value = 100;
     uintptr_t check = 20;
@@ -697,9 +855,10 @@ static void check_lowest_error_out_is_null(void **state) {
 static void check_lowest_error_on_empty_set(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t lowest;
     assert_false(coral_linked_red_black_tree_set_lowest(
             &object, (const void **) &lowest));
@@ -712,9 +871,10 @@ static void check_lowest_error_on_empty_set(void **state) {
 static void check_lowest(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t check = 100;
     assert_true(coral_linked_red_black_tree_set_add(&object, &check));
     const uintmax_t *lowest;
@@ -749,9 +909,10 @@ static void check_highest_error_out_is_null(void **state) {
 static void check_highest_error_on_empty_set(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t highest;
     assert_false(coral_linked_red_black_tree_set_highest(
             &object, (const void **) &highest));
@@ -764,9 +925,10 @@ static void check_highest_error_on_empty_set(void **state) {
 static void check_highest(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t check = 10;
     assert_true(coral_linked_red_black_tree_set_add(&object, &check));
     const uintmax_t *highest;
@@ -801,9 +963,10 @@ static void check_first_error_on_out_is_null(void **state) {
 static void check_first_error_on_empty_set(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t *first;
     assert_false(coral_linked_red_black_tree_set_first(
             &object, (const void **) &first));
@@ -817,9 +980,10 @@ static void check_first(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t check = (rand() % UINTPTR_MAX);
     uintptr_t value = check;
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
@@ -857,9 +1021,10 @@ static void check_last_error_on_out_is_null(void **state) {
 static void check_last_error_on_empty_set(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     const uintptr_t *last;
     assert_false(coral_linked_red_black_tree_set_last(
             &object, (const void **) &last));
@@ -873,9 +1038,10 @@ static void check_last(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     const uintmax_t *last;
@@ -912,9 +1078,10 @@ static void check_remove_item_error_on_item_is_null(void **state) {
 static void check_remove_item(void **state) {
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintmax_t value = 10;
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     const uintmax_t *item;
@@ -961,9 +1128,10 @@ static void check_next_error_on_end_of_sequence(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     const uintmax_t *item;
@@ -981,9 +1149,10 @@ static void check_next(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     const uintmax_t *item;
@@ -1029,9 +1198,10 @@ static void check_prev_error_on_end_of_sequence(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     const uintmax_t *item;
@@ -1049,9 +1219,10 @@ static void check_prev(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t check = (rand() % UINTPTR_MAX);
     uintptr_t value = check;
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
@@ -1098,9 +1269,10 @@ static void check_insert_after_error_on_memory_allocation_failed(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     const uintmax_t *first;
@@ -1122,9 +1294,10 @@ static void check_insert_after(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     const uintmax_t *first;
@@ -1146,9 +1319,10 @@ static void check_insert_after_error_on_value_already_exists(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     const uintmax_t *first;
@@ -1194,9 +1368,10 @@ check_insert_before_error_on_memory_allocation_failed(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     const uintmax_t *first;
@@ -1218,9 +1393,10 @@ static void check_insert_before(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     const uintmax_t *first;
@@ -1242,9 +1418,10 @@ static void check_insert_before_error_on_value_already_exists(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     const uintmax_t *first;
@@ -1278,9 +1455,10 @@ static void check_append_error_on_memory_allocation_failed(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     posix_memalign_is_overridden = true;
     assert_false(coral_linked_red_black_tree_set_append(&object, &value));
@@ -1296,9 +1474,10 @@ static void check_append(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_append(&object, &value));
     const uintptr_t *item;
@@ -1320,9 +1499,10 @@ static void check_append_error_on_value_already_exists(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     assert_false(coral_linked_red_black_tree_set_append(&object, &value));
@@ -1352,9 +1532,10 @@ static void check_prepend_error_on_memory_allocation_failed(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     posix_memalign_is_overridden = true;
     assert_false(coral_linked_red_black_tree_set_prepend(&object, &value));
@@ -1370,9 +1551,10 @@ static void check_prepend(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_prepend(&object, &value));
     const uintptr_t *item;
@@ -1394,9 +1576,10 @@ static void check_prepend_error_on_value_already_exists(void **state) {
     srand(time(NULL));
     coral_error = CORAL_ERROR_NONE;
     struct coral_linked_red_black_tree_set object;
-    assert_true(coral_linked_red_black_tree_set_init(&object,
-                                                     sizeof(uintptr_t),
-                                                     compare_uintptr_t));
+    assert_true(coral_linked_red_black_tree_set_init(
+            &object,
+            sizeof(uintptr_t),
+            compare_uintptr_t));
     uintptr_t value = (rand() % UINTPTR_MAX);
     assert_true(coral_linked_red_black_tree_set_add(&object, &value));
     assert_false(coral_linked_red_black_tree_set_prepend(&object, &value));
@@ -1430,25 +1613,30 @@ int main(int argc, char *argv[]) {
             cmocka_unit_test(check_remove_error_on_value_is_null),
             cmocka_unit_test(check_remove_error_on_item_not_found),
             cmocka_unit_test(check_remove),
+            cmocka_unit_test(check_remove_error_on_memory_allocation_failed),
             cmocka_unit_test(check_contains_error_on_object_is_null),
             cmocka_unit_test(check_contains_error_on_value_is_null),
             cmocka_unit_test(check_contains_error_on_out_is_null),
             cmocka_unit_test(check_contains),
+            cmocka_unit_test(check_contains_error_on_memory_allocation_failed),
             cmocka_unit_test(check_get_error_on_object_is_null),
             cmocka_unit_test(check_get_error_on_value_is_null),
             cmocka_unit_test(check_get_error_on_out_is_null),
             cmocka_unit_test(check_get_error_on_item_not_found),
             cmocka_unit_test(check_get),
+            cmocka_unit_test(check_get_error_on_memory_allocation_failed),
             cmocka_unit_test(check_ceiling_error_on_object_is_null),
             cmocka_unit_test(check_ceiling_error_on_value_is_null),
             cmocka_unit_test(check_ceiling_error_on_out_is_null),
             cmocka_unit_test(check_ceiling_error_on_item_not_found),
             cmocka_unit_test(check_ceiling),
+            cmocka_unit_test(check_ceiling_error_on_memory_allocation_failed),
             cmocka_unit_test(check_floor_error_on_object_is_null),
             cmocka_unit_test(check_floor_error_on_value_is_null),
             cmocka_unit_test(check_floor_error_on_out_is_null),
             cmocka_unit_test(check_floor_error_on_item_not_found),
             cmocka_unit_test(check_floor),
+            cmocka_unit_test(check_floor_error_on_memory_allocation_failed),
             cmocka_unit_test(check_higher_error_on_object_is_null),
             cmocka_unit_test(check_higher_error_on_value_is_null),
             cmocka_unit_test(check_higher_error_on_out_is_null),
@@ -1459,6 +1647,7 @@ int main(int argc, char *argv[]) {
             cmocka_unit_test(check_lower_error_on_out_is_null),
             cmocka_unit_test(check_lower_error_on_item_not_found),
             cmocka_unit_test(check_lower),
+            cmocka_unit_test(check_higher_error_on_memory_allocation_failed),
             cmocka_unit_test(check_lowest_error_object_is_null),
             cmocka_unit_test(check_lowest_error_out_is_null),
             cmocka_unit_test(check_lowest_error_on_empty_set),

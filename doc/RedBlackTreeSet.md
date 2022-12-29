@@ -54,8 +54,6 @@ static int student_compare(const void *const a, const void *const b) {
 }
 ```
 
-_Do not use ``struct coral_red_black_tree_set`` within your compare callstack._
-
 ### Invalidation
 
 Invalidated ``struct coral_red_black_tree_set`` instances have their contents
@@ -72,5 +70,3 @@ seagrass_required_true(coral_red_black_tree_set_invalidate(
         &students, student_on_destroy));
 ```
 
-_Do not use ``struct coral_red_black_tree_set`` within your on_destroy 
-callstack._

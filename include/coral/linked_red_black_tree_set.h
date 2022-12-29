@@ -125,6 +125,8 @@ bool coral_linked_red_black_tree_set_add(
  * <i>NULL</i>.
  * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_VALUE_NOT_FOUND if value is
  * not in the tree set instance.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if
+ * there is not enough memory to find item for removal.
  */
 bool coral_linked_red_black_tree_set_remove(
         struct coral_linked_red_black_tree_set *object,
@@ -142,6 +144,8 @@ bool coral_linked_red_black_tree_set_remove(
  * <i>NULL</i>.
  * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_OUT_IS_NULL if out is
  * <i>NULL</i>.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if
+ * there is not enough memory to find item.
  */
 bool coral_linked_red_black_tree_set_contains(
         const struct coral_linked_red_black_tree_set *object,
@@ -162,6 +166,8 @@ bool coral_linked_red_black_tree_set_contains(
  * <i>NULL</i>.
  * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_ITEM_NOT_FOUND if there is no
  * item that matched value.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if
+ * there is not enough memory to find item.
  */
 bool coral_linked_red_black_tree_set_get(
         const struct coral_linked_red_black_tree_set *object,
@@ -182,6 +188,8 @@ bool coral_linked_red_black_tree_set_get(
  * <i>NULL</i>.
  * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_ITEM_NOT_FOUND if no item
  * matched value or a higher value.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if
+ * there is not enough memory to find item.
  */
 bool coral_linked_red_black_tree_set_ceiling(
         const struct coral_linked_red_black_tree_set *object,
@@ -202,6 +210,8 @@ bool coral_linked_red_black_tree_set_ceiling(
  * <i>NULL</i>.
  * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_ITEM_NOT_FOUND if no item
  * matched value or a lower value.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if
+ * there is not enough memory to find item.
  */
 bool coral_linked_red_black_tree_set_floor(
         const struct coral_linked_red_black_tree_set *object,
@@ -222,6 +232,8 @@ bool coral_linked_red_black_tree_set_floor(
  * <i>NULL</i>.
  * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_ITEM_NOT_FOUND if there is no
  * greater value.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if
+ * there is not enough memory to find item.
  */
 bool coral_linked_red_black_tree_set_higher(
         const struct coral_linked_red_black_tree_set *object,
@@ -242,6 +254,8 @@ bool coral_linked_red_black_tree_set_higher(
  * <i>NULL</i>.
  * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_ITEM_NOT_FOUND if there is no
  * lower value.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_SET_ERROR_MEMORY_ALLOCATION_FAILED if
+ * there is not enough memory to find item.
  */
 bool coral_linked_red_black_tree_set_lower(
         const struct coral_linked_red_black_tree_set *object,

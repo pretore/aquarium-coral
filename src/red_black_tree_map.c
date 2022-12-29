@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <assert.h>
 #include <errno.h>
 #include <string.h>
 #include <seagrass.h>
@@ -15,14 +16,17 @@ struct entry {
     unsigned char data[];
 };
 
-static _Thread_local const struct coral_red_black_tree_map *this;
-static _Thread_local const void *ptr;
+static _Thread_local const struct coral_red_black_tree_map *this = NULL;
+static _Thread_local struct coral_linked_stack stack;
 
 static int entity_compare(const struct rock_red_black_tree_node *const a,
                           const struct rock_red_black_tree_node *const b) {
+    void *ptr;
+    seagrass_required_true(coral_linked_stack_peek(
+            &stack, &ptr));
     if (!ptr) {
         const struct entry *const A = rock_container_of(a, struct entry, node);
-        ptr = &A->data;
+        ptr = (void *) &A->data;
     }
     const struct entry *const B = rock_container_of(b, struct entry, node);
     return this->compare(ptr, &B->data);
@@ -77,6 +81,12 @@ bool coral_red_black_tree_map_init(
                                == seagrass_error || result);
         coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_SIZE_IS_TOO_LARGE;
         return false;
+    }
+    /* stack is used to defer the copying of key until we know that the red
+     * black tree does not contain it */
+    if (!stack.size) {
+        seagrass_required_true(coral_linked_stack_init(
+                &stack, sizeof(void *)));
     }
     *object = (struct coral_red_black_tree_map) {0};
     seagrass_required_true(rock_red_black_tree_init(
@@ -163,6 +173,74 @@ bool coral_red_black_tree_map_count(
     return true;
 }
 
+/**
+ * @brief Find key in tree map.
+ * @param [in] object tree map instance.
+ * @param [in] key to be found.
+ * @param [out] out node of exact match or insertion point.
+ * @return If exact match found true, otherwise false if an error has occurred.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if key was not found.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there
+ * is insufficient memory to search for key.
+ */
+static bool find(const struct coral_red_black_tree_map *const object,
+                 const void *const key,
+                 struct rock_red_black_tree_node **out) {
+    assert(object);
+    assert(out);
+    this = object;
+    const void *ptr = key;
+    if (!coral_linked_stack_push(&stack, &ptr)) {
+        seagrass_required_true(
+                CORAL_LINKED_STACK_ERROR_MEMORY_ALLOCATION_FAILED
+                == coral_error);
+        coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED;
+        return false;
+    }
+    const bool result = rock_red_black_tree_find(
+            &object->tree,
+            NULL,
+            (void *) 1, /* dummy non-NULL value */
+            out);
+    if (!result) {
+        seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
+                               == rock_error);
+        coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
+    }
+    seagrass_required_true(coral_linked_stack_pop(
+            &stack, (void **) &ptr));
+    return result;
+}
+
+/**
+ * @brief Insert entry at insertion point in tree map.
+ * @param [in] object tree map instance.
+ * @param [in] insertion_point where entry will be inserted.
+ * @param [in] entry to be inserted.
+ * @return On success true, otherwise false if an error has occurred.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there
+ * is insufficient memory to insert entry.
+ */
+static bool insert(struct coral_red_black_tree_map *const object,
+                   struct rock_red_black_tree_node *const insertion_point,
+                   struct entry *entry) {
+    assert(object);
+    assert(entry);
+    this = object;
+    void *ptr = NULL;
+    if (!coral_linked_stack_push(&stack, &ptr)) {
+        seagrass_required_true(CORAL_LINKED_STACK_ERROR_MEMORY_ALLOCATION_FAILED
+                               == coral_error);
+        coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED;
+        return false;
+    }
+    seagrass_required_true(rock_red_black_tree_insert(
+            &object->tree, insertion_point, &entry->node));
+    seagrass_required_true(coral_linked_stack_pop(
+            &stack, (void **) &ptr));
+    return true;
+}
+
 bool coral_red_black_tree_map_add(
         struct coral_red_black_tree_map *const object,
         const void *const key,
@@ -180,17 +258,15 @@ bool coral_red_black_tree_map_add(
         return false;
     }
     struct rock_red_black_tree_node *insertion_point;
-    this = object;
-    ptr = key; /* delay copy until we know that key does not already exist */
-    if (rock_red_black_tree_find(&object->tree,
-                                 NULL,
-                                 (void *) 1, /* dummy non-NULL value */
-                                 &insertion_point)) {
+    if (find(object, key, &insertion_point)) {
         coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_ALREADY_EXISTS;
         return false;
+    } else if (CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED
+               == coral_error) {
+        return false;
     }
-    seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
-                           == rock_error);
+    seagrass_required_true(CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND
+                           == coral_error);
     struct entry *entry;
     {
         const int error = posix_memalign((void **) &entry, sizeof(void *),
@@ -206,10 +282,14 @@ bool coral_red_black_tree_map_add(
     memcpy(&entry->data, key, object->key);
     void *const dest = ((char *) &entry->data) + object->key + object->padding;
     memcpy(dest, value, object->value);
-    ptr = NULL; /* insert the entry into the container */
-    seagrass_required_true(rock_red_black_tree_insert(
-            &object->tree, insertion_point, &entry->node));
-    return true;
+    const bool result = insert(object, insertion_point, entry);
+    if (!result) {
+        seagrass_required_true(
+                CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED
+                == coral_error);
+        free(entry);
+    }
+    return result;
 }
 
 bool coral_red_black_tree_map_remove(
@@ -223,16 +303,17 @@ bool coral_red_black_tree_map_remove(
         coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL;
         return false;
     }
-    this = object;
-    ptr = key; /* avoid unnecessary copying of key for removal */
     struct rock_red_black_tree_node *node;
-    if (!rock_red_black_tree_find(&object->tree,
-                                  NULL,
-                                  (void *) 1, /* dummy non-NULL value */
-                                  &node)) {
-        seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
-                               == rock_error);
-        coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
+    if (!find(object, key, &node)) {
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND:
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                break;
+            }
+        }
         return false;
     }
     seagrass_required_true(rock_red_black_tree_remove(
@@ -258,18 +339,21 @@ bool coral_red_black_tree_map_contains(
         coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL;
         return false;
     }
-    this = object;
-    ptr = key; /* avoid unnecessary copying of key */
     struct rock_red_black_tree_node *node;
-    *out = rock_red_black_tree_find(&object->tree,
-                                    NULL,
-                                    (void *) 1, /* dummy non-NULL value */
-                                    &node);
+    *out = find(object, key, &node);
     if (!*out) {
-        seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
-                               == rock_error);
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND:
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                break;
+            }
+        }
     }
-    return true;
+    return *out
+           || CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND == coral_error;
 }
 
 bool coral_red_black_tree_map_set(
@@ -288,16 +372,17 @@ bool coral_red_black_tree_map_set(
         coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_VALUE_IS_NULL;
         return false;
     }
-    this = object;
-    ptr = key; /* avoid unnecessary copying of key */
     struct rock_red_black_tree_node *node;
-    if (!rock_red_black_tree_find(&object->tree,
-                                  NULL,
-                                  (void *) 1, /* dummy non-NULL value */
-                                  &node)) {
-        seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
-                               == rock_error);
-        coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
+    if (!find(object, key, &node)) {
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND:
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                break;
+            }
+        }
         return false;
     }
     struct entry *const A = rock_container_of(node, struct entry, node);
@@ -324,8 +409,15 @@ bool coral_red_black_tree_map_get(
     }
     const struct coral_red_black_tree_map_entry *entry;
     if (!coral_red_black_tree_map_get_entry(object, key, &entry)) {
-        seagrass_required_true(CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND
-                               == coral_error);
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND:
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                break;
+            }
+        }
         return false;
     }
     seagrass_required_true(coral_red_black_tree_map_entry_get_value(
@@ -351,8 +443,15 @@ bool coral_red_black_tree_map_ceiling(
     }
     const struct coral_red_black_tree_map_entry *entry;
     if (!coral_red_black_tree_map_ceiling_entry(object, key, &entry)) {
-        seagrass_required_true(CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND
-                               == coral_error);
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND:
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                break;
+            }
+        }
         return false;
     }
     seagrass_required_true(coral_red_black_tree_map_entry_get_value(
@@ -378,8 +477,15 @@ bool coral_red_black_tree_map_floor(
     }
     const struct coral_red_black_tree_map_entry *entry;
     if (!coral_red_black_tree_map_floor_entry(object, key, &entry)) {
-        seagrass_required_true(CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND
-                               == coral_error);
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND:
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                break;
+            }
+        }
         return false;
     }
     seagrass_required_true(coral_red_black_tree_map_entry_get_value(
@@ -405,8 +511,15 @@ bool coral_red_black_tree_map_higher(
     }
     const struct coral_red_black_tree_map_entry *entry;
     if (!coral_red_black_tree_map_higher_entry(object, key, &entry)) {
-        seagrass_required_true(CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND
-                               == coral_error);
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND:
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                break;
+            }
+        }
         return false;
     }
     seagrass_required_true(coral_red_black_tree_map_entry_get_value(
@@ -432,8 +545,15 @@ bool coral_red_black_tree_map_lower(
     }
     const struct coral_red_black_tree_map_entry *entry;
     if (!coral_red_black_tree_map_lower_entry(object, key, &entry)) {
-        seagrass_required_true(CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND
-                               == coral_error);
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND:
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                break;
+            }
+        }
         return false;
     }
     seagrass_required_true(coral_red_black_tree_map_entry_get_value(
@@ -501,20 +621,54 @@ bool coral_red_black_tree_map_get_entry(
         coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL;
         return false;
     }
-    this = object;
-    ptr = key; /* avoid unnecessary copying of key */
     struct rock_red_black_tree_node *node;
-    if (!rock_red_black_tree_find(&object->tree,
-                                  NULL,
-                                  (void *) 1, /* dummy non-NULL value */
-                                  &node)) {
-        seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
-                               == rock_error);
-        coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
+    if (!find(object, key, &node)) {
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND:
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                break;
+            }
+        }
         return false;
     }
     struct entry *const A = rock_container_of(node, struct entry, node);
     *out = (const struct coral_red_black_tree_map_entry *) &A->data;
+    return true;
+}
+
+/**
+ * @brief Compare key with entry using tree map comparator.
+ * @param [in] object tree map instance.
+ * @param [in] first to be compared
+ * @param [in] second to be compared
+ * @param [out] out less than 0 if first item is less than second
+ * item, 0 if they are equal and greater than 0 if second is greater than first.
+ * @return On success true, otherwise false if an error has occurred.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there
+ * is insufficient memory to compare the two items.
+ */
+static bool compare(const struct coral_red_black_tree_map *const object,
+                    const void *const first,
+                    const void *const second,
+                    int *const out) {
+    assert(object);
+    assert(first);
+    assert(second);
+    assert(out);
+    this = object;
+    void *ptr = NULL;
+    if (!coral_linked_stack_push(&stack, &ptr)) {
+        seagrass_required_true(CORAL_LINKED_STACK_ERROR_MEMORY_ALLOCATION_FAILED
+                               == coral_error);
+        coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED;
+        return false;
+    }
+    *out = object->compare(first, second);
+    seagrass_required_true(coral_linked_stack_pop(
+            &stack, &ptr));
     return true;
 }
 
@@ -534,23 +688,30 @@ bool coral_red_black_tree_map_ceiling_entry(
         coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL;
         return false;
     }
-    this = object;
-    ptr = key; /* avoid unnecessary copying of key */
     struct rock_red_black_tree_node *node;
-    if (!rock_red_black_tree_find(&object->tree,
-                                  NULL,
-                                  (void *) 1, /* dummy non-NULL value */
-                                  &node)) {
-        seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
-                               == rock_error);
-        if (!node) {
-            coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
-            return false;
-        }
-        struct entry *const B = rock_container_of(node, struct entry, node);
-        if (object->compare(key, &B->data) > 0) {
-            coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
-            return false;
+    if (!find(object, key, &node)) {
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                return false;
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND: {
+                if (!node) {
+                    return false;
+                }
+                struct entry *const B = rock_container_of(
+                        node, struct entry, node);
+                int result;
+                if (!compare(object, key, &B->data, &result)) {
+                    return false;
+                }
+                if (result > 0) {
+                    coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
+                    return false;
+                }
+            }
         }
     }
     struct entry *const A = rock_container_of(node, struct entry, node);
@@ -574,23 +735,30 @@ bool coral_red_black_tree_map_floor_entry(
         coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL;
         return false;
     }
-    this = object;
-    ptr = key; /* avoid unnecessary copying of key */
     struct rock_red_black_tree_node *node;
-    if (!rock_red_black_tree_find(&object->tree,
-                                  NULL,
-                                  (void *) 1, /* dummy non-NULL value */
-                                  &node)) {
-        seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
-                               == rock_error);
-        if (!node) {
-            coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
-            return false;
-        }
-        struct entry *const B = rock_container_of(node, struct entry, node);
-        if (object->compare(key, &B->data) < 0) {
-            coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
-            return false;
+    if (!find(object, key, &node)) {
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                return false;
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND: {
+                if (!node) {
+                    return false;
+                }
+                struct entry *const B = rock_container_of(
+                        node, struct entry, node);
+                int result;
+                if (!compare(object, key, &B->data, &result)) {
+                    return false;
+                }
+                if (result < 0) {
+                    coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
+                    return false;
+                }
+            }
         }
     }
     struct entry *const A = rock_container_of(node, struct entry, node);
@@ -614,23 +782,30 @@ bool coral_red_black_tree_map_higher_entry(
         coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL;
         return false;
     }
-    this = object;
-    ptr = key; /* avoid unnecessary copying of key */
     struct rock_red_black_tree_node *node;
-    if (!rock_red_black_tree_find(&object->tree,
-                                  NULL,
-                                  (void *) 1, /* dummy non-NULL value */
-                                  &node)) {
-        seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
-                               == rock_error);
-        if (!node) {
-            coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
-            return false;
-        }
-        struct entry *const B = rock_container_of(node, struct entry, node);
-        if (object->compare(key, &B->data) > 0) {
-            coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
-            return false;
+    if (!find(object, key, &node)) {
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                return false;
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND: {
+                if (!node) {
+                    return false;
+                }
+                struct entry *const B = rock_container_of(
+                        node, struct entry, node);
+                int result;
+                if (!compare(object, key, &B->data, &result)) {
+                    return false;
+                }
+                if (result > 0) {
+                    coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
+                    return false;
+                }
+            }
         }
     } else if (!rock_red_black_tree_next(node, &node)) {
         seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_END_OF_SEQUENCE
@@ -659,23 +834,30 @@ bool coral_red_black_tree_map_lower_entry(
         coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL;
         return false;
     }
-    this = object;
-    ptr = key; /* avoid unnecessary copying of key */
     struct rock_red_black_tree_node *node;
-    if (!rock_red_black_tree_find(&object->tree,
-                                  NULL,
-                                  (void *) 1, /* dummy non-NULL value */
-                                  &node)) {
-        seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
-                               == rock_error);
-        if (!node) {
-            coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
-            return false;
-        }
-        struct entry *const B = rock_container_of(node, struct entry, node);
-        if (object->compare(key, &B->data) < 0) {
-            coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
-            return false;
+    if (!find(object, key, &node)) {
+        switch (coral_error) {
+            default: {
+                seagrass_required_true(false);
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED: {
+                return false;
+            }
+            case CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND: {
+                if (!node) {
+                    return false;
+                }
+                struct entry *const B = rock_container_of(
+                        node, struct entry, node);
+                int result;
+                if (!compare(object, key, &B->data, &result)) {
+                    return false;
+                }
+                if (result < 0) {
+                    coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND;
+                    return false;
+                }
+            }
         }
     } else if (!rock_red_black_tree_prev(node, &node)) {
         seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_END_OF_SEQUENCE

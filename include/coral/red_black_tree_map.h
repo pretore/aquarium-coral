@@ -142,6 +142,8 @@ bool coral_red_black_tree_map_add(struct coral_red_black_tree_map *object,
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if key could not be
  * found.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association for removal.
  */
 bool coral_red_black_tree_map_remove(struct coral_red_black_tree_map *object,
                                      const void *key);
@@ -156,6 +158,8 @@ bool coral_red_black_tree_map_remove(struct coral_red_black_tree_map *object,
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association.
  */
 bool coral_red_black_tree_map_contains(
         const struct coral_red_black_tree_map *object,
@@ -174,6 +178,8 @@ bool coral_red_black_tree_map_contains(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_VALUE_IS_NULL if value is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if key could not be
  * found.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association.
  */
 bool coral_red_black_tree_map_set(struct coral_red_black_tree_map *object,
                                   const void *key,
@@ -191,6 +197,8 @@ bool coral_red_black_tree_map_set(struct coral_red_black_tree_map *object,
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if key could not be
  * found.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association.
  */
 bool coral_red_black_tree_map_get(
         const struct coral_red_black_tree_map *object,
@@ -209,6 +217,8 @@ bool coral_red_black_tree_map_get(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if key nor a
  * higher key is in the tree map instance.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association.
  */
 bool coral_red_black_tree_map_ceiling(
         const struct coral_red_black_tree_map *object,
@@ -227,6 +237,8 @@ bool coral_red_black_tree_map_ceiling(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if key nor a lower key
  * is in the tree map instance.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association.
  */
 bool coral_red_black_tree_map_floor(
         const struct coral_red_black_tree_map *object,
@@ -245,6 +257,8 @@ bool coral_red_black_tree_map_floor(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if no higher key
  * is in the tree map instance.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association.
  */
 bool coral_red_black_tree_map_higher(
         const struct coral_red_black_tree_map *object,
@@ -263,6 +277,8 @@ bool coral_red_black_tree_map_higher(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if no lower value for
  * key is in the tree map instance.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association.
  */
 bool coral_red_black_tree_map_lower(
         const struct coral_red_black_tree_map *object,
@@ -309,6 +325,8 @@ bool coral_red_black_tree_map_last(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if key could not be
  * found.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association.
  */
 bool coral_red_black_tree_map_get_entry(
         const struct coral_red_black_tree_map *object,
@@ -325,8 +343,10 @@ bool coral_red_black_tree_map_get_entry(
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
- * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if key nor a higher
- * key is in the tree map instance.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if key or a higher
+ * key was not found in the tree map instance.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association.
  */
 bool coral_red_black_tree_map_ceiling_entry(
         const struct coral_red_black_tree_map *object,
@@ -343,8 +363,10 @@ bool coral_red_black_tree_map_ceiling_entry(
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
- * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if key nor a lower key
- * is in the tree map instance.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if key or a lower key
+ * was not found in in the tree map instance.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association.
  */
 bool coral_red_black_tree_map_floor_entry(
         const struct coral_red_black_tree_map *object,
@@ -361,8 +383,10 @@ bool coral_red_black_tree_map_floor_entry(
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
- * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if no higher key
- * is in the tree map instance.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND if no higher key was
+ * not found in the tree map instance.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association.
  */
 bool coral_red_black_tree_map_higher_entry(
         const struct coral_red_black_tree_map *object,
@@ -379,8 +403,10 @@ bool coral_red_black_tree_map_higher_entry(
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
- * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_ITEM_NOT_FOUND if no lower value for
- * key is in the tree map instance.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_ITEM_NOT_FOUND if no lower key was
+ * found in the tree map instance.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
+ * not enough memory to find key-value association.
  */
 bool coral_red_black_tree_map_lower_entry(
         const struct coral_red_black_tree_map *object,
