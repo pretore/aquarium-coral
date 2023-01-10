@@ -5,7 +5,9 @@
 #include <seagrass.h>
 #include <coral.h>
 
-#include "test/cmocka.h"
+#ifdef TEST
+#include <test/cmocka.h>
+#endif
 
 struct coral_red_black_tree_map_entry {
     void *data;

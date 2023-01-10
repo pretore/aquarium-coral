@@ -6,7 +6,7 @@
 #include <time.h>
 #include <coral.h>
 
-#include "test/cmocka.h"
+#include <test/cmocka.h>
 
 static void check_invalidate_error_on_object_is_null(void **state) {
     coral_error = CORAL_ERROR_NONE;

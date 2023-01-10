@@ -5,7 +5,9 @@
 #include <coral.h>
 #include <string.h>
 
-#include "test/cmocka.h"
+#ifdef TEST
+#include <test/cmocka.h>
+#endif
 
 struct entry {
     struct rock_red_black_tree_node rbt_node;

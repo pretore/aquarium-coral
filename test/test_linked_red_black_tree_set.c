@@ -7,7 +7,7 @@
 #include <seagrass.h>
 #include <coral.h>
 
-#include "test/cmocka.h"
+#include <test/cmocka.h>
 
 static int compare_uintptr_t(const void *const a, const void *const b) {
     const uintptr_t A = *(uintptr_t *) a;

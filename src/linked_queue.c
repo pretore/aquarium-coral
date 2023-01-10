@@ -5,7 +5,9 @@
 #include <rock.h>
 #include <coral.h>
 
-#include "test/cmocka.h"
+#ifdef TEST
+#include <test/cmocka.h>
+#endif
 
 struct node {
     struct rock_forward_list_node node;

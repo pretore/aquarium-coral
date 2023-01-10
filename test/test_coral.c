@@ -5,7 +5,7 @@
 #include <string.h>
 #include <coral.h>
 
-#include "test/cmocka.h"
+#include <test/cmocka.h>
 
 int main(int argc, char *argv[]) {
     const struct CMUnitTest tests[] = {

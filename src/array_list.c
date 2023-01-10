@@ -4,6 +4,10 @@
 #include <rock.h>
 #include <coral.h>
 
+#ifdef TEST
+#include <test/cmocka.h>
+#endif
+
 bool coral_array_list_init(struct coral_array_list *const object,
                            const size_t size,
                            const uintmax_t capacity) {
