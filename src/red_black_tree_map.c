@@ -121,9 +121,19 @@ bool coral_red_black_tree_map_invalidate(
         coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL;
         return false;
     }
+    struct {
+        void (*on_destroy_callback)(void *key, void *value);
+        const struct coral_red_black_tree_map *this;
+    } saved = {
+            .on_destroy_callback = on_destroy_callback,
+            .this = this
+    };
+    this = object; /* needed for 'entry_on_destroy' */
     on_destroy_callback = on_destroy;
     seagrass_required_true(rock_red_black_tree_invalidate(
             &object->tree, entry_on_destroy));
+    this = saved.this;
+    on_destroy_callback = saved.on_destroy_callback;
     *object = (struct coral_red_black_tree_map) {0};
     return true;
 }

@@ -88,9 +88,15 @@ bool coral_red_black_tree_set_invalidate(
         coral_error = CORAL_RED_BLACK_TREE_SET_ERROR_OBJECT_IS_NULL;
         return false;
     }
+    struct {
+        void (*on_destroy_callback)(void *item);
+    } saved = {
+            .on_destroy_callback = on_destroy_callback
+    };
     on_destroy_callback = on_destroy;
     seagrass_required_true(rock_red_black_tree_invalidate(
             &object->tree, entry_on_destroy));
+    on_destroy_callback = saved.on_destroy_callback;
     *object = (struct coral_red_black_tree_set) {0};
     return true;
 }
