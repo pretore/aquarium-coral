@@ -121,7 +121,6 @@ bool coral_red_black_tree_map_invalidate(
         coral_error = CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL;
         return false;
     }
-    this = object;
     on_destroy_callback = on_destroy;
     seagrass_required_true(rock_red_black_tree_invalidate(
             &object->tree, entry_on_destroy));
