@@ -27,9 +27,9 @@ static void check_invalidate(void **state) {
 static void check_init_error_on_object_is_null(void **state) {
     coral_error = CORAL_ERROR_NONE;
     assert_false(coral_red_black_tree_map_init(NULL,
-                                              sizeof(uintmax_t),
-                                              sizeof(uintmax_t),
-                                              (void *) 1));
+                                               sizeof(uintmax_t),
+                                               sizeof(uintmax_t),
+                                               (void *) 1));
     assert_int_equal(CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL,
                      coral_error);
     coral_error = CORAL_ERROR_NONE;
@@ -38,9 +38,9 @@ static void check_init_error_on_object_is_null(void **state) {
 static void check_init_error_on_key_size_is_zero(void **state) {
     coral_error = CORAL_ERROR_NONE;
     assert_false(coral_red_black_tree_map_init((void *) 1,
-                                              0,
-                                              sizeof(uintmax_t),
-                                              (void *) 1));
+                                               0,
+                                               sizeof(uintmax_t),
+                                               (void *) 1));
     assert_int_equal(CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_SIZE_IS_ZERO,
                      coral_error);
     coral_error = CORAL_ERROR_NONE;
@@ -49,9 +49,9 @@ static void check_init_error_on_key_size_is_zero(void **state) {
 static void check_init_error_on_value_size_is_zero(void **state) {
     coral_error = CORAL_ERROR_NONE;
     assert_false(coral_red_black_tree_map_init((void *) 1,
-                                              sizeof(uintmax_t),
-                                              0,
-                                              (void *) 1));
+                                               sizeof(uintmax_t),
+                                               0,
+                                               (void *) 1));
     assert_int_equal(CORAL_RED_BLACK_TREE_MAP_ERROR_VALUE_SIZE_IS_ZERO,
                      coral_error);
     coral_error = CORAL_ERROR_NONE;
@@ -60,9 +60,9 @@ static void check_init_error_on_value_size_is_zero(void **state) {
 static void check_init_error_on_compare_is_null(void **state) {
     coral_error = CORAL_ERROR_NONE;
     assert_false(coral_red_black_tree_map_init((void *) 1,
-                                              sizeof(uintmax_t),
-                                              sizeof(uintmax_t),
-                                              NULL));
+                                               sizeof(uintmax_t),
+                                               sizeof(uintmax_t),
+                                               NULL));
     assert_int_equal(CORAL_RED_BLACK_TREE_MAP_ERROR_COMPARE_IS_NULL,
                      coral_error);
     coral_error = CORAL_ERROR_NONE;
@@ -71,23 +71,23 @@ static void check_init_error_on_compare_is_null(void **state) {
 static void check_init_error_on_entry_size_is_too_large(void **state) {
     coral_error = CORAL_ERROR_NONE;
     assert_false(coral_red_black_tree_map_init((void *) 1,
-                                              SIZE_MAX,
-                                              sizeof(uintmax_t),
-                                              (void *) 1));
+                                               SIZE_MAX,
+                                               sizeof(uintmax_t),
+                                               (void *) 1));
     assert_int_equal(CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_SIZE_IS_TOO_LARGE,
                      coral_error);
     coral_error = CORAL_ERROR_NONE;
     assert_false(coral_red_black_tree_map_init((void *) 1,
-                                              sizeof(uintmax_t),
-                                              SIZE_MAX,
-                                              (void *) 1));
+                                               sizeof(uintmax_t),
+                                               SIZE_MAX,
+                                               (void *) 1));
     assert_int_equal(CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_SIZE_IS_TOO_LARGE,
                      coral_error);
     coral_error = CORAL_ERROR_NONE;
     assert_false(coral_red_black_tree_map_init((void *) 1,
-                                              SIZE_MAX,
-                                              SIZE_MAX,
-                                              (void *) 1));
+                                               SIZE_MAX,
+                                               SIZE_MAX,
+                                               (void *) 1));
     assert_int_equal(CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_SIZE_IS_TOO_LARGE,
                      coral_error);
     coral_error = CORAL_ERROR_NONE;
@@ -458,7 +458,7 @@ static void check_contains_error_on_memory_allocation_failed(void **state) {
             = posix_memalign_is_overridden = true;
     assert_false(coral_red_black_tree_map_contains(&object, &key, &result));
     malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
-                = posix_memalign_is_overridden = false;
+            = posix_memalign_is_overridden = false;
     assert_int_equal(CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED,
                      coral_error);
     assert_true(coral_red_black_tree_map_invalidate(&object, NULL));
@@ -547,7 +547,7 @@ static void check_get_error_on_memory_allocation_failed(void **state) {
     assert_false(coral_red_black_tree_map_get(
             &object, &key, (const void **) &out));
     malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
-                = posix_memalign_is_overridden = false;
+            = posix_memalign_is_overridden = false;
     assert_int_equal(CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED,
                      coral_error);
     assert_true(coral_red_black_tree_map_invalidate(&object, NULL));
@@ -1073,7 +1073,7 @@ static void check_set_error_on_memory_allocation_failed(void **state) {
             = posix_memalign_is_overridden = true;
     assert_false(coral_red_black_tree_map_set(&object, &key, &value));
     malloc_is_overridden = calloc_is_overridden = realloc_is_overridden
-                = posix_memalign_is_overridden = false;
+            = posix_memalign_is_overridden = false;
     assert_int_equal(CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED,
                      coral_error);
     assert_true(coral_red_black_tree_map_invalidate(&object, NULL));
@@ -2376,7 +2376,7 @@ int main(int argc, char *argv[]) {
             cmocka_unit_test(check_entry_set_value_error_on_object_is_null),
             cmocka_unit_test(check_entry_set_value_error_on_entry_is_null),
             cmocka_unit_test(check_entry_set_value_error_on_value_is_null),
-            cmocka_unit_test(check_entry_set_value)
+            cmocka_unit_test(check_entry_set_value),
     };
     //cmocka_set_message_output(CM_OUTPUT_XML);
     return cmocka_run_group_tests(tests, NULL, NULL);

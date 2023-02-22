@@ -33,7 +33,8 @@ struct coral_array_list {
  * @throws CORAL_ARRAY_LIST_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * insufficient memory to initialize the array list instance.
  */
-bool coral_array_list_init(struct coral_array_list *object, size_t size,
+bool coral_array_list_init(struct coral_array_list *object,
+                           size_t size,
                            uintmax_t capacity);
 
 /**
@@ -92,7 +93,8 @@ bool coral_array_list_set_length(struct coral_array_list *object,
  * @throws CORAL_ARRAY_LIST_ERROR_OBJECT_IS_NULL if object is <i>NULL</i>.
  * @throws CORAL_ARRAY_LIST_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  */
-bool coral_array_list_size(const struct coral_array_list *object, size_t *out);
+bool coral_array_list_size(const struct coral_array_list *object,
+                           size_t *out);
 
 /**
  * @brief Release excess capacity.
@@ -111,7 +113,8 @@ bool coral_array_list_shrink(struct coral_array_list *object);
  * @throws CORAL_ARRAY_LIST_ERROR_MEMORY_ALLOCATION_FAILED if there is not
  * enough memory to add another item.
  */
-bool coral_array_list_add(struct coral_array_list *object, const void *item);
+bool coral_array_list_add(struct coral_array_list *object,
+                          const void *item);
 
 /**
  * @brief Append all the items.
@@ -125,7 +128,8 @@ bool coral_array_list_add(struct coral_array_list *object, const void *item);
  * @throws CORAL_ARRAY_LIST_ERROR_MEMORY_ALLOCATION_FAILED if there is not
  * enough memory to append all the items.
  */
-bool coral_array_list_add_all(struct coral_array_list *object, uintmax_t count,
+bool coral_array_list_add_all(struct coral_array_list *object,
+                              uintmax_t count,
                               const void **items);
 
 /**
@@ -149,7 +153,8 @@ bool coral_array_list_remove_last(struct coral_array_list *object);
  * @throws CORAL_ARRAY_LIST_ERROR_MEMORY_ALLOCATION_FAILED if there is not
  * enough memory to add another item.
  */
-bool coral_array_list_insert(struct coral_array_list *object, uintmax_t at,
+bool coral_array_list_insert(struct coral_array_list *object,
+                             uintmax_t at,
                              const void *item);
 
 /**
@@ -167,8 +172,10 @@ bool coral_array_list_insert(struct coral_array_list *object, uintmax_t at,
  * @throws CORAL_ARRAY_LIST_ERROR_MEMORY_ALLOCATION_FAILED if there is not
  * enough memory to add all the items to the array list.
  */
-bool coral_array_list_insert_all(struct coral_array_list *object, uintmax_t at,
-                                 uintmax_t count, const void **items);
+bool coral_array_list_insert_all(struct coral_array_list *object,
+                                 uintmax_t at,
+                                 uintmax_t count,
+                                 const void **items);
 
 /**
  * @brief Remove an item at the given index.
@@ -179,7 +186,8 @@ bool coral_array_list_insert_all(struct coral_array_list *object, uintmax_t at,
  * @throws CORAL_ARRAY_LIST_ERROR_INDEX_IS_OUT_OF_BOUNDS if at does not refer
  * to an item contained within the array list.
  */
-bool coral_array_list_remove(struct coral_array_list *object, uintmax_t at);
+bool coral_array_list_remove(struct coral_array_list *object,
+                             uintmax_t at);
 
 /**
  * @brief Remove all the items from the given index up to count items.
@@ -192,7 +200,8 @@ bool coral_array_list_remove(struct coral_array_list *object, uintmax_t at);
  * @throws CORAL_ARRAY_LIST_ERROR_INDEX_IS_OUT_OF_BOUNDS if at does not refer
  * to an item contained within the array list.
  */
-bool coral_array_list_remove_all(struct coral_array_list *object, uintmax_t at,
+bool coral_array_list_remove_all(struct coral_array_list *object,
+                                 uintmax_t at,
                                  uintmax_t count);
 
 /**
@@ -206,7 +215,8 @@ bool coral_array_list_remove_all(struct coral_array_list *object, uintmax_t at,
  * @throws CORAL_ARRAY_LIST_ERROR_INDEX_IS_OUT_OF_BOUNDS if at does not refer
  * to an item contained within the array list.
  */
-bool coral_array_list_get(const struct coral_array_list *object, uintmax_t at,
+bool coral_array_list_get(const struct coral_array_list *object,
+                          uintmax_t at,
                           void **out);
 
 /**
@@ -221,7 +231,8 @@ bool coral_array_list_get(const struct coral_array_list *object, uintmax_t at,
  * @throws CORAL_ARRAY_LIST_ERROR_INDEX_IS_OUT_OF_BOUNDS if at does not refer
  * to an item contained within the array list.
  */
-bool coral_array_list_set(struct coral_array_list *object, uintmax_t at,
+bool coral_array_list_set(struct coral_array_list *object,
+                          uintmax_t at,
                           const void *item);
 
 /**
@@ -233,7 +244,8 @@ bool coral_array_list_set(struct coral_array_list *object, uintmax_t at,
  * @throws CORAL_ARRAY_LIST_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_ARRAY_LIST_ERROR_LIST_IS_EMPTY if the array list is empty.
  */
-bool coral_array_list_first(const struct coral_array_list *object, void **out);
+bool coral_array_list_first(const struct coral_array_list *object,
+                            void **out);
 
 /**
  * @brief Last item of the array list.
@@ -244,7 +256,8 @@ bool coral_array_list_first(const struct coral_array_list *object, void **out);
  * @throws CORAL_ARRAY_LIST_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_ARRAY_LIST_ERROR_LIST_IS_EMPTY if the array list is empty.
  */
-bool coral_array_list_last(const struct coral_array_list *object, void **out);
+bool coral_array_list_last(const struct coral_array_list *object,
+                           void **out);
 
 /**
  * @brief Retrieve next item.
@@ -260,7 +273,8 @@ bool coral_array_list_last(const struct coral_array_list *object, void **out);
  * @throws CORAL_ARRAY_LIST_ERROR_END_OF_SEQUENCE if there is no next item.
  */
 bool coral_array_list_next(const struct coral_array_list *object,
-                           const void *item, void **out);
+                           const void *item,
+                           void **out);
 
 /**
  * @brief Retrieve previous item.
@@ -276,6 +290,23 @@ bool coral_array_list_next(const struct coral_array_list *object,
  * @throws CORAL_ARRAY_LIST_ERROR_END_OF_SEQUENCE if there is no previous item.
  */
 bool coral_array_list_prev(const struct coral_array_list *object,
-                           const void *item, void **out);
+                           const void *item,
+                           void **out);
+
+/**
+ * @brief Receive the index of item.
+ * @param [in] object array list instance.
+ * @param [in] item whose index we would like.
+ * @param [out] out receive the index of item.
+ * @return On success true, otherwise false if an error has occurred.
+ * @throws CORAL_ARRAY_LIST_ERROR_OBJECT_IS_NULL if object is <i>NULL</i>.
+ * @throws CORAL_ARRAY_LIST_ERROR_ITEM_IS_NULL if item is <i>NULL</i>.
+ * @throws CORAL_ARRAY_LIST_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
+ * @throws CORAL_ARRAY_LIST_ERROR_ITEM_IS_OUT_OF_BOUNDS if item is not
+ * contained within the array list.
+ */
+bool coral_array_list_at(const struct coral_array_list *object,
+                         const void *item,
+                         uintmax_t *out);
 
 #endif /* _CORAL_ARRAY_LIST_H_ */

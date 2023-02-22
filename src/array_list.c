@@ -341,23 +341,24 @@ static bool retrieve_np(
         coral_error = CORAL_ARRAY_LIST_ERROR_OUT_IS_NULL;
         return false;
     }
-    const bool result = func(&object->array, item, out);
-    if (!result) {
-        switch (rock_error) {
-            case ROCK_ARRAY_ERROR_ITEM_IS_OUT_OF_BOUNDS: {
-                coral_error = CORAL_ARRAY_LIST_ERROR_ITEM_IS_OUT_OF_BOUNDS;
-                break;
-            }
-            case ROCK_ARRAY_ERROR_END_OF_SEQUENCE: {
-                coral_error = CORAL_ARRAY_LIST_ERROR_END_OF_SEQUENCE;
-                break;
-            }
-            default: {
-                seagrass_required_true(false);
-            }
+    if (func(&object->array, item, out)) {
+        return true;
+    }
+    switch (rock_error) {
+        default: {
+            seagrass_required_true(false);
+        }
+        case ROCK_ARRAY_ERROR_ITEM_IS_OUT_OF_BOUNDS: {
+            coral_error = CORAL_ARRAY_LIST_ERROR_ITEM_IS_OUT_OF_BOUNDS;
+            break;
+        }
+        case ROCK_ARRAY_ERROR_END_OF_SEQUENCE: {
+            coral_error = CORAL_ARRAY_LIST_ERROR_END_OF_SEQUENCE;
+            break;
         }
     }
-    return result;
+
+    return false;
 }
 
 bool coral_array_list_next(const struct coral_array_list *const object,
@@ -370,4 +371,29 @@ bool coral_array_list_prev(const struct coral_array_list *const object,
                            const void *const item,
                            void **const out) {
     return retrieve_np(object, item, out, rock_array_prev);
+}
+
+bool coral_array_list_at(const struct coral_array_list *const object,
+                         const void *const item,
+                         uintmax_t *const out) {
+    if (!object) {
+        coral_error = CORAL_ARRAY_LIST_ERROR_OBJECT_IS_NULL;
+        return false;
+    }
+    if (!item) {
+        coral_error = CORAL_ARRAY_LIST_ERROR_ITEM_IS_NULL;
+        return false;
+    }
+    if (!out) {
+        coral_error = CORAL_ARRAY_LIST_ERROR_OUT_IS_NULL;
+        return false;
+    }
+    const bool result = rock_array_at(&object->array, item, out);
+    if (!result) {
+        seagrass_required_true(
+                ROCK_ARRAY_ERROR_ITEM_IS_OUT_OF_BOUNDS
+                == rock_error);
+        coral_error = CORAL_ARRAY_LIST_ERROR_ITEM_IS_OUT_OF_BOUNDS;
+    }
+    return result;
 }

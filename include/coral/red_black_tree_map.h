@@ -67,7 +67,8 @@ bool coral_red_black_tree_map_init(struct coral_red_black_tree_map *object,
  * @param [in] object instance to be invalidated.
  * @param [in] on_destroy called just before the entry is to be destroyed.
  * @return On success true, otherwise false if an error has occurred.
- * @throws CORAL_TREE_MAP_ERROR_OBJECT_IS_NULL if object is <i>NULL</i>.
+ * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
+ * <i>NULL</i>.
  */
 bool
 coral_red_black_tree_map_invalidate(struct coral_red_black_tree_map *object,
@@ -84,8 +85,9 @@ coral_red_black_tree_map_invalidate(struct coral_red_black_tree_map *object,
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  */
 bool
-coral_red_black_tree_map_key_size(const struct coral_red_black_tree_map *object,
-                                  size_t *out);
+coral_red_black_tree_map_key_size(
+        const struct coral_red_black_tree_map *object,
+        size_t *out);
 
 /**
  * @brief Retrieve the size of the value.
@@ -128,9 +130,10 @@ bool coral_red_black_tree_map_count(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to add key-value association to the tree map.
  */
-bool coral_red_black_tree_map_add(struct coral_red_black_tree_map *object,
-                                  const void *key,
-                                  const void *value);
+bool coral_red_black_tree_map_add(
+        struct coral_red_black_tree_map *object,
+        const void *key,
+        const void *value);
 
 /**
  * @brief Remove key-value association.
@@ -145,8 +148,9 @@ bool coral_red_black_tree_map_add(struct coral_red_black_tree_map *object,
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association for removal.
  */
-bool coral_red_black_tree_map_remove(struct coral_red_black_tree_map *object,
-                                     const void *key);
+bool coral_red_black_tree_map_remove(
+        struct coral_red_black_tree_map *object,
+        const void *key);
 
 /**
  * @brief Check if tree map contains the given key.
@@ -181,9 +185,10 @@ bool coral_red_black_tree_map_contains(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_set(struct coral_red_black_tree_map *object,
-                                  const void *key,
-                                  const void *value);
+bool coral_red_black_tree_map_set(
+        struct coral_red_black_tree_map *object,
+        const void *key,
+        const void *value);
 
 /**
  * @brief Retrieve the value for the given key.
