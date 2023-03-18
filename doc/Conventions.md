@@ -16,16 +16,15 @@ If there is no possibility of failure then the function must have a
 void coral_required(const void *object);
 ```
 
-If the function can fail then the return type must be a ``bool`` where 
-``true`` means that the function completed without error and ``false`` 
-otherwise.
+If the function can fail then the return type must be an ``int`` where
+``0`` means that the function completed without error.
 
 ```c
-bool coral_add_size_t(const size_t a, const size_t b, size_t *out)
+int coral_add_size_t(const size_t a, const size_t b, size_t *out)
 ```
 
-There are a few exceptions to this rule where already established 
-conventions makes more sense for example when an ``int`` return type is 
+There are a few exceptions to this rule where already established
+conventions makes more sense for example when an ``int`` return type is
 used for comparison functions.
 
 ```c
@@ -34,26 +33,19 @@ int memcmp(const void *s1, const void *s2, size_t n);
 
 ### Errors
 
-Errors are reported by setting the ``coral_error`` to the correct error value 
-and then returning ``false``.
+Errors are reported by returning the appropriate error code.
 
 ```c
-bool coral_add_size_t(const size_t a, const size_t b, size_t *out) {
+int coral_add_size_t(const size_t a, const size_t b, size_t *out) {
     if (!out) {
-        rock_error = CORAL_ERROR_OUT_IS_NULL;
-        return false;
+        return CORAL_ERROR_OUT_IS_NULL;
     }
     ...
 ```
 
-It is always preferred to have domain specific error codes than a generic 
-one.
+It is required to remap error codes from ``aquarium-sea-urchin`` to domain
+specific errors.
 
 ```c
-// preferred a domain specific error
-#define CORAL_RED_BLACK_TREE_ERROR_OUT_IS_NULL  2
-
-// generic error
-#define CORAL_ERROR_OUT_IS_NULL                 1
+#define CORAL_ERROR_OUT_IS_NULL SEA_URCHIN_ERROR_OUT_IS_NULL
 ```
-

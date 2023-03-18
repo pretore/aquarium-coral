@@ -26,7 +26,7 @@ struct student_value {
 };
 
 struct coral_red_black_tree_map students;
-seagrass_required_true(coral_red_black_tree_map_init(
+seagrass_required_true(!coral_red_black_tree_map_init(
         &students,
         sizeof(struct student_key), 
         sizeof(struct student_value),
@@ -66,7 +66,7 @@ static void student_on_destroy(void *const key, void *const value) {
     free(A->name); /* free the heap allocated name */
 }
 
-seagrass_required_true(coral_red_black_tree_map_invalidate(
+seagrass_required_true(!coral_red_black_tree_map_invalidate(
         &students, student_on_destroy));
 ```
 

@@ -4,8 +4,6 @@
 
 Abstract data structures in C.
 
-### [array](https://en.wikipedia.org/wiki/Array_(data_type))
-
 ### [list](https://en.wikipedia.org/wiki/List_(abstract_data_type))
 - ``coral_array_list`` - [dynamic array](https://en.wikipedia.org/wiki/Dynamic_array).
 

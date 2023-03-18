@@ -23,7 +23,7 @@ struct student {
 };
 
 struct coral_red_black_tree_set students;
-seagrass_required_true(coral_red_black_tree_set_init(
+seagrass_required_true(!coral_red_black_tree_set_init(
         &students, sizeof(struct student), student_compare));
 ```
 
@@ -48,7 +48,7 @@ static int student_compare(const void *const a, const void *const b) {
         return result;
     }
     /* ... and finally by age. */
-    seagrass_required_true(seagrass_uintmax_t_compare(
+    seagrass_required_true(!seagrass_uintmax_t_compare(
             A->age, B->age, &result));
     return result;
 }
@@ -66,7 +66,7 @@ static void student_on_destroy(void *const a) {
     free(A->name); /* free the heap allocated name */
 }
 
-seagrass_required_true(coral_red_black_tree_set_invalidate(
+seagrass_required_true(!coral_red_black_tree_set_invalidate(
         &students, student_on_destroy));
 ```
 

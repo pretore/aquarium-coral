@@ -5,21 +5,36 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <rock.h>
+#include <sea-urchin.h>
 
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL               1
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_COMPARE_IS_NULL              2
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_SIZE_IS_ZERO             3
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_VALUE_SIZE_IS_ZERO           4
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_SIZE_IS_TOO_LARGE      5
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL                  6
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL                  7
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_VALUE_IS_NULL                8
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_IS_NULL                9
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_ALREADY_EXISTS           10
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND                11
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED     12
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_MAP_IS_EMPTY                 13
-#define CORAL_RED_BLACK_TREE_MAP_ERROR_END_OF_SEQUENCE              14
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL \
+    SEA_URCHIN_ERROR_OBJECT_IS_NULL
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_COMPARE_IS_NULL \
+    SEA_URCHIN_ERROR_FUNCTION_IS_NULL
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_SIZE_IS_ZERO \
+    SEA_URCHIN_ERROR_KEY_IS_TOO_LARGE
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_VALUE_SIZE_IS_ZERO \
+    SEA_URCHIN_ERROR_VALUE_IS_ZERO
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_SIZE_IS_TOO_LARGE \
+    SEA_URCHIN_ERROR_VALUE_IS_TOO_LARGE
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL \
+    SEA_URCHIN_ERROR_OUT_IS_NULL
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL \
+    SEA_URCHIN_ERROR_KEY_IS_NULL
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_VALUE_IS_NULL \
+    SEA_URCHIN_ERROR_VALUE_IS_NULL
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_IS_NULL \
+    SEA_URCHIN_ERROR_ITEM_IS_NULL
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_ALREADY_EXISTS \
+    SEA_URCHIN_ERROR_VALUE_ALREADY_EXISTS
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_NOT_FOUND \
+    SEA_URCHIN_ERROR_VALUE_NOT_FOUND
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED \
+    SEA_URCHIN_ERROR_MEMORY_ALLOCATION_FAILED
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_MAP_IS_EMPTY \
+    SEA_URCHIN_ERROR_IS_EMPTY
+#define CORAL_RED_BLACK_TREE_MAP_ERROR_END_OF_SEQUENCE \
+    SEA_URCHIN_ERROR_END_OF_SEQUENCE
 
 struct coral_red_black_tree_map {
     struct rock_red_black_tree tree;
@@ -42,7 +57,7 @@ struct coral_red_black_tree_map_entry;
  * equal to, or greater than zero if the <u>first key</u> is considered
  * to be respectively less than, equal to, or greater than the <u>second
  * key</u>.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_COMPARE_IS_NULL if compare is
@@ -52,11 +67,12 @@ struct coral_red_black_tree_map_entry;
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_SIZE_IS_TOO_LARGE if the sum of
  * key size and value size is too large.
  */
-bool coral_red_black_tree_map_init(struct coral_red_black_tree_map *object,
-                                   size_t key,
-                                   size_t value,
-                                   int (*compare)(const void *first,
-                                                  const void *second));
+int coral_red_black_tree_map_init(
+        struct coral_red_black_tree_map *object,
+        size_t key,
+        size_t value,
+        int (*compare)(const void *first,
+                       const void *second));
 
 /**
  * @brief Invalidate red black tree map.
@@ -66,26 +82,24 @@ bool coral_red_black_tree_map_init(struct coral_red_black_tree_map *object,
  * structure.</p>
  * @param [in] object instance to be invalidated.
  * @param [in] on_destroy called just before the entry is to be destroyed.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  */
-bool
-coral_red_black_tree_map_invalidate(struct coral_red_black_tree_map *object,
-                                    void (*on_destroy)(void *key,
-                                                       void *value));
+int coral_red_black_tree_map_invalidate(
+        struct coral_red_black_tree_map *object,
+        void (*on_destroy)(void *key, void *value));
 
 /**
  * @brief Retrieve the size of the key.
  * @param [in] object tree map instance.
  * @param [out] out receive the size of the key.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  */
-bool
-coral_red_black_tree_map_key_size(
+int coral_red_black_tree_map_key_size(
         const struct coral_red_black_tree_map *object,
         size_t *out);
 
@@ -93,12 +107,12 @@ coral_red_black_tree_map_key_size(
  * @brief Retrieve the size of the value.
  * @param [in] object tree map instance.
  * @param [out] out receive the size of the value.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  */
-bool coral_red_black_tree_map_value_size(
+int coral_red_black_tree_map_value_size(
         const struct coral_red_black_tree_map *object,
         size_t *out);
 
@@ -106,12 +120,12 @@ bool coral_red_black_tree_map_value_size(
  * @brief Retrieve the count of entries.
  * @param [in] object instance whose count we are to retrieve.
  * @param [out] out receive the entry count.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  */
-bool coral_red_black_tree_map_count(
+int coral_red_black_tree_map_count(
         const struct coral_red_black_tree_map *object,
         uintmax_t *out);
 
@@ -120,7 +134,7 @@ bool coral_red_black_tree_map_count(
  * @param [in] object tree map instance.
  * @param [in] key to which the value will be associated with.
  * @param [in] value that will returned from a lookup of key.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -130,7 +144,7 @@ bool coral_red_black_tree_map_count(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to add key-value association to the tree map.
  */
-bool coral_red_black_tree_map_add(
+int coral_red_black_tree_map_add(
         struct coral_red_black_tree_map *object,
         const void *key,
         const void *value);
@@ -139,7 +153,7 @@ bool coral_red_black_tree_map_add(
  * @brief Remove key-value association.
  * @param [in] object tree map instance.
  * @param [in] key for which we would like the key-value association removed.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -148,7 +162,7 @@ bool coral_red_black_tree_map_add(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association for removal.
  */
-bool coral_red_black_tree_map_remove(
+int coral_red_black_tree_map_remove(
         struct coral_red_black_tree_map *object,
         const void *key);
 
@@ -157,7 +171,7 @@ bool coral_red_black_tree_map_remove(
  * @param [in] object tree map instance.
  * @param [in] key to check if it is present.
  * @param [out] out true if key is present, otherwise false.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -165,7 +179,7 @@ bool coral_red_black_tree_map_remove(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_contains(
+int coral_red_black_tree_map_contains(
         const struct coral_red_black_tree_map *object,
         const void *key,
         bool *out);
@@ -175,7 +189,7 @@ bool coral_red_black_tree_map_contains(
  * @param [in] object tree map instance.
  * @param [in] key used for which value is to be changed.
  * @param [in] value of new association with given key.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -185,7 +199,7 @@ bool coral_red_black_tree_map_contains(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_set(
+int coral_red_black_tree_map_set(
         struct coral_red_black_tree_map *object,
         const void *key,
         const void *value);
@@ -195,7 +209,7 @@ bool coral_red_black_tree_map_set(
  * @param [in] object tree map instance.
  * @param [in] key used to get the associated value.
  * @param [out] out receive the <u>address of</u> value.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -205,7 +219,7 @@ bool coral_red_black_tree_map_set(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_get(
+int coral_red_black_tree_map_get(
         const struct coral_red_black_tree_map *object,
         const void *key,
         const void **out);
@@ -215,7 +229,7 @@ bool coral_red_black_tree_map_get(
  * @param [in] object tree map instance.
  * @param [in] key to find or the next higher key.
  * @param [out] out receive the <u>address of</u> value.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -225,7 +239,7 @@ bool coral_red_black_tree_map_get(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_ceiling(
+int coral_red_black_tree_map_ceiling(
         const struct coral_red_black_tree_map *object,
         const void *key,
         const void **out);
@@ -235,7 +249,7 @@ bool coral_red_black_tree_map_ceiling(
  * @param [in] object tree map instance.
  * @param [in] key to find or the next lower key.
  * @param [out] out receive the <u>address of</u> value.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -245,7 +259,7 @@ bool coral_red_black_tree_map_ceiling(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_floor(
+int coral_red_black_tree_map_floor(
         const struct coral_red_black_tree_map *object,
         const void *key,
         const void **out);
@@ -255,7 +269,7 @@ bool coral_red_black_tree_map_floor(
  * @param [in] object tree map instance.
  * @param [in] key whose next higher key we are trying to find.
  * @param [out] out receive the <u>address of</u> value.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -265,7 +279,7 @@ bool coral_red_black_tree_map_floor(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_higher(
+int coral_red_black_tree_map_higher(
         const struct coral_red_black_tree_map *object,
         const void *key,
         const void **out);
@@ -275,7 +289,7 @@ bool coral_red_black_tree_map_higher(
  * @param [in] object tree map instance.
  * @param [in] key whose next lower key we are trying to find.
  * @param [out] out receive the <u>address of</u> value.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -285,7 +299,7 @@ bool coral_red_black_tree_map_higher(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_lower(
+int coral_red_black_tree_map_lower(
         const struct coral_red_black_tree_map *object,
         const void *key,
         const void **out);
@@ -294,13 +308,13 @@ bool coral_red_black_tree_map_lower(
  * @brief Retrieve value of first entry.
  * @param [in] object tree map instance.
  * @param [out] out receive the <u>address of</u> the first entry's value.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MAP_IS_EMPTY if tree map is empty.
  */
-bool coral_red_black_tree_map_first(
+int coral_red_black_tree_map_first(
         const struct coral_red_black_tree_map *object,
         const void **out);
 
@@ -308,13 +322,13 @@ bool coral_red_black_tree_map_first(
  * @brief Retrieve value of last entry.
  * @param [in] object tree map instance.
  * @param [out] out receive the <u>address of</u> the last entry's value.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MAP_IS_EMPTY if tree map is empty.
  */
-bool coral_red_black_tree_map_last(
+int coral_red_black_tree_map_last(
         const struct coral_red_black_tree_map *object,
         const void **out);
 
@@ -323,7 +337,7 @@ bool coral_red_black_tree_map_last(
  * @param [in] object tree map instance.
  * @param [in] key of the entry we are looking for.
  * @param [out] out receive the <u>address of</u> entry.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -333,7 +347,7 @@ bool coral_red_black_tree_map_last(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_get_entry(
+int coral_red_black_tree_map_get_entry(
         const struct coral_red_black_tree_map *object,
         const void *key,
         const struct coral_red_black_tree_map_entry **out);
@@ -343,7 +357,7 @@ bool coral_red_black_tree_map_get_entry(
  * @param [in] object tree map instance.
  * @param [in] key to find or the next higher key.
  * @param [out] out receive the <u>address of</u> entry.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -353,7 +367,7 @@ bool coral_red_black_tree_map_get_entry(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_ceiling_entry(
+int coral_red_black_tree_map_ceiling_entry(
         const struct coral_red_black_tree_map *object,
         const void *key,
         const struct coral_red_black_tree_map_entry **out);
@@ -363,7 +377,7 @@ bool coral_red_black_tree_map_ceiling_entry(
  * @param [in] object tree map instance.
  * @param [in] key to find or the next lower key.
  * @param [out] out receive the <u>address of</u> entry.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -373,7 +387,7 @@ bool coral_red_black_tree_map_ceiling_entry(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_floor_entry(
+int coral_red_black_tree_map_floor_entry(
         const struct coral_red_black_tree_map *object,
         const void *key,
         const struct coral_red_black_tree_map_entry **out);
@@ -383,7 +397,7 @@ bool coral_red_black_tree_map_floor_entry(
  * @param [in] object tree map instance.
  * @param [in] key whose next higher key we are trying to find.
  * @param [out] out receive the <u>address of</u> entry.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -393,7 +407,7 @@ bool coral_red_black_tree_map_floor_entry(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_higher_entry(
+int coral_red_black_tree_map_higher_entry(
         const struct coral_red_black_tree_map *object,
         const void *key,
         const struct coral_red_black_tree_map_entry **out);
@@ -403,7 +417,7 @@ bool coral_red_black_tree_map_higher_entry(
  * @param [in] object tree map instance.
  * @param [in] key whose next lower key we are trying to find.
  * @param [out] out receive the <u>address of</u> entry.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_KEY_IS_NULL if key is <i>NULL</i>.
@@ -413,7 +427,7 @@ bool coral_red_black_tree_map_higher_entry(
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MEMORY_ALLOCATION_FAILED if there is
  * not enough memory to find key-value association.
  */
-bool coral_red_black_tree_map_lower_entry(
+int coral_red_black_tree_map_lower_entry(
         const struct coral_red_black_tree_map *object,
         const void *key,
         const struct coral_red_black_tree_map_entry **out);
@@ -422,13 +436,13 @@ bool coral_red_black_tree_map_lower_entry(
  * @brief Retrieve first entry.
  * @param [in] object tree map instance.
  * @param [out] out receive the <u>address of</u> the first entry.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MAP_IS_EMPTY if tree map is empty.
  */
-bool coral_red_black_tree_map_first_entry(
+int coral_red_black_tree_map_first_entry(
         const struct coral_red_black_tree_map *object,
         const struct coral_red_black_tree_map_entry **out);
 
@@ -436,13 +450,13 @@ bool coral_red_black_tree_map_first_entry(
  * @brief Retrieve last entry.
  * @param [in] object tree map instance.
  * @param [out] out receive the <u>address of</u> the last entry.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_MAP_IS_EMPTY if tree map is empty.
  */
-bool coral_red_black_tree_map_last_entry(
+int coral_red_black_tree_map_last_entry(
         const struct coral_red_black_tree_map *object,
         const struct coral_red_black_tree_map_entry **out);
 
@@ -450,12 +464,12 @@ bool coral_red_black_tree_map_last_entry(
  * @brief Remove entry.
  * @param [in] object tree map instance.
  * @param [in] entry <u>address of</u> entry to be removed.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_IS_NULL if entry is <i>NULL</i>.
  */
-bool coral_red_black_tree_map_remove_entry(
+int coral_red_black_tree_map_remove_entry(
         struct coral_red_black_tree_map *object,
         const struct coral_red_black_tree_map_entry *entry);
 
@@ -463,13 +477,13 @@ bool coral_red_black_tree_map_remove_entry(
  * @brief Retrieve the next entry.
  * @param [in] entry <u>address of</u> current entry.
  * @param [out] out receive the <u>address of</u> the next entry.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_IS_NULL if entry is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_END_OF_SEQUENCE if there is no next
  * entry.
  */
-bool coral_red_black_tree_map_next_entry(
+int coral_red_black_tree_map_next_entry(
         const struct coral_red_black_tree_map_entry *entry,
         const struct coral_red_black_tree_map_entry **out);
 
@@ -477,13 +491,13 @@ bool coral_red_black_tree_map_next_entry(
  * @brief Retrieve the previous entry.
  * @param [in] entry <u>address of</u> current entry.
  * @param [out] out receive the <u>address of</u> the previous entry.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_IS_NULL if entry is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_END_OF_SEQUENCE if there is no
  * previous entry.
  */
-bool coral_red_black_tree_map_prev_entry(
+int coral_red_black_tree_map_prev_entry(
         const struct coral_red_black_tree_map_entry *entry,
         const struct coral_red_black_tree_map_entry **out);
 
@@ -493,13 +507,13 @@ bool coral_red_black_tree_map_prev_entry(
  * @param [in] entry <u>address of</u> entry contained within the tree map
  * instance.
  * @param [out] out receive the <u>address of</u> the entry's key.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_IS_NULL if entry is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  */
-bool coral_red_black_tree_map_entry_key(
+int coral_red_black_tree_map_entry_key(
         const struct coral_red_black_tree_map *object,
         const struct coral_red_black_tree_map_entry *entry,
         const void **out);
@@ -510,13 +524,13 @@ bool coral_red_black_tree_map_entry_key(
  * @param [in] entry <u>address of</u> entry contained within the tree map
  * instance.
  * @param [out] out receive the <u>address of</u> the entry's value.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_IS_NULL if entry is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OUT_IS_NULL if out is <i>NULL</i>.
  */
-bool coral_red_black_tree_map_entry_get_value(
+int coral_red_black_tree_map_entry_get_value(
         const struct coral_red_black_tree_map *object,
         const struct coral_red_black_tree_map_entry *entry,
         const void **out);
@@ -527,13 +541,13 @@ bool coral_red_black_tree_map_entry_get_value(
  * @param [in] entry <u>address of</u> entry contained within the tree map
  * instance.
  * @param [in] value to set entry's value to.
- * @return On success true, otherwise false if an error has occurred.
+ * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_OBJECT_IS_NULL if object is
  * <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_ENTRY_IS_NULL if entry is <i>NULL</i>.
  * @throws CORAL_RED_BLACK_TREE_MAP_ERROR_VALUE_IS_NULL if value is <i>NULL</i>.
  */
-bool coral_red_black_tree_map_entry_set_value(
+int coral_red_black_tree_map_entry_set_value(
         const struct coral_red_black_tree_map *object,
         const struct coral_red_black_tree_map_entry *entry,
         const void *value);

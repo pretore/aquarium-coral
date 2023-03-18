@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(aquarium-coral VERSION 1.4.0
+project(aquarium-coral VERSION 2.0.0
         LANGUAGES C
         DESCRIPTION "Abstract data structures in C")
 
@@ -11,12 +11,16 @@ set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 find_package(Doxygen OPTIONAL_COMPONENTS dot mscgen dia)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    include(cmake/FetchAquariumCMocka.cmake)
+endif()
+include(cmake/FetchAquariumSeaUrchin.cmake)
+include(cmake/FetchAquariumSeagrass.cmake)
 include(cmake/FetchAquariumRock.cmake)
 
 # Sources
 set(EXPORTED_HEADER_FILES
         include/coral/array_list.h
-        include/coral/error.h
         include/coral/linked_queue.h
         include/coral/linked_red_black_tree_set.h
         include/coral/linked_stack.h
@@ -25,9 +29,10 @@ set(EXPORTED_HEADER_FILES
         include/coral.h)
 set(SOURCES
         ${EXPORTED_HEADER_FILES}
+        src/private/stack.c
+        src/private/stack.h
         src/array_list.c
         src/coral.c
-        src/error.c
         src/linked_queue.c
         src/linked_red_black_tree_set.c
         src/linked_stack.c
@@ -42,7 +47,6 @@ endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     include(CTest)
-    include(cmake/FetchAquariumCMocka.cmake)
     add_library(${PROJECT_NAME} STATIC "")
     add_compile_definitions(TEST)
     target_sources(${PROJECT_NAME}
@@ -52,6 +56,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             PUBLIC
                 ${CMAKE_THREAD_LIBS_INIT}
                 aquarium-cmocka
+                aquarium-sea-urchin
+                aquarium-seagrass
                 aquarium-rock)
     target_include_directories(${PROJECT_NAME}
             PUBLIC
@@ -68,6 +74,15 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             PRIVATE
                 ${PROJECT_NAME})
     add_test(${PROJECT_NAME}-unit-test ${PROJECT_NAME}-unit-test)
+    # aquarium-coral-stack-unit-test
+    add_executable(${PROJECT_NAME}-stack-unit-test test/test_stack.c)
+    target_include_directories(${PROJECT_NAME}-stack-unit-test
+            PRIVATE
+                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
+    target_link_libraries(${PROJECT_NAME}-stack-unit-test
+            PRIVATE
+                ${PROJECT_NAME})
+    add_test(${PROJECT_NAME}-stack-unit-test ${PROJECT_NAME}-stack-unit-test)
     # aquarium-coral-red-black-tree-set-unit-test
     add_executable(${PROJECT_NAME}-red-black-tree-set-unit-test
             test/test_red_black_tree_set.c)
@@ -146,6 +161,8 @@ else()
     target_link_libraries(${PROJECT_NAME}
             PUBLIC
                 ${CMAKE_THREAD_LIBS_INIT}
+                aquarium-sea-urchin
+                aquarium-seagrass
                 aquarium-rock)
     set_target_properties(${PROJECT_NAME}
             PROPERTIES
