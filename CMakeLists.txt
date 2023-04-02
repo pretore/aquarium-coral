@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(aquarium-coral VERSION 2.0.1
+project(aquarium-coral VERSION 2.0.2
         LANGUAGES C
         DESCRIPTION "Abstract data structures in C")
 
