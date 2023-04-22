@@ -112,7 +112,7 @@ int coral_red_black_tree_container_invalidate(
  * <i>NULL</i>.
  */
 int coral_red_black_tree_container_count(
-        struct coral_red_black_tree_container *object,
+        const struct coral_red_black_tree_container *object,
         uintmax_t *out);
 
 /**

@@ -121,7 +121,7 @@ int coral_red_black_tree_container_invalidate(
 }
 
 int coral_red_black_tree_container_count(
-        struct coral_red_black_tree_container *const object,
+        const struct coral_red_black_tree_container *const object,
         uintmax_t *const out) {
     if (!object) {
         return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL;
