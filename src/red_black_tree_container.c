@@ -270,7 +270,9 @@ int coral_red_black_tree_container_floor(
         if (!node) {
             return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND;
         }
-        if ((error = rock_red_black_tree_prev(node, &node))) {
+        struct entry *const B = rock_container_of(node, struct entry, node);
+        if (entity_compare(&K->node, &B->node) < 0
+            && (error = rock_red_black_tree_prev(node, &node))) {
             seagrass_required_true(
                     ROCK_RED_BLACK_TREE_ERROR_END_OF_SEQUENCE
                     == error);
@@ -352,7 +354,9 @@ int coral_red_black_tree_container_lower(
             return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND;
         }
     }
-    if ((error = rock_red_black_tree_prev(node, &node))) {
+    struct entry *const B = rock_container_of(node, struct entry, node);
+    if (entity_compare(&K->node, &B->node) <= 0
+        && (error = rock_red_black_tree_prev(node, &node))) {
         seagrass_required_true(
                 ROCK_RED_BLACK_TREE_ERROR_END_OF_SEQUENCE
                 == error);
