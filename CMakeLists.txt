@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
-project(aquarium-coral VERSION 2.0.2
+project(aquarium-coral VERSION 3.0.0
         LANGUAGES C
-        DESCRIPTION "Abstract data structures in C")
+        DESCRIPTION "Generic data structures in C")
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
@@ -21,23 +21,19 @@ include(cmake/FetchAquariumRock.cmake)
 # Sources
 set(EXPORTED_HEADER_FILES
         include/coral/array_list.h
-        include/coral/linked_queue.h
-        include/coral/linked_red_black_tree_set.h
-        include/coral/linked_stack.h
-        include/coral/red_black_tree_map.h
-        include/coral/red_black_tree_set.h
+        include/coral/forward_queue.h
+        include/coral/forward_stack.h
+        include/coral/linked_red_black_tree_container.h
+        include/coral/red_black_tree_container.h
         include/coral.h)
 set(SOURCES
         ${EXPORTED_HEADER_FILES}
-        src/private/stack.c
-        src/private/stack.h
         src/array_list.c
         src/coral.c
-        src/linked_queue.c
-        src/linked_red_black_tree_set.c
-        src/linked_stack.c
-        src/red_black_tree_map.c
-        src/red_black_tree_set.c)
+        src/forward_queue.c
+        src/forward_stack.c
+        src/linked_red_black_tree_container.c
+        src/red_black_tree_container.c)
 
 if(DOXYGEN_FOUND)
     set(DOXYGEN_EXTRACT_ALL YES)
@@ -74,70 +70,28 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             PRIVATE
                 ${PROJECT_NAME})
     add_test(${PROJECT_NAME}-unit-test ${PROJECT_NAME}-unit-test)
-    # aquarium-coral-stack-unit-test
-    add_executable(${PROJECT_NAME}-stack-unit-test test/test_stack.c)
-    target_include_directories(${PROJECT_NAME}-stack-unit-test
+    # aquarium-coral-forward-queue-unit-test
+    add_executable(${PROJECT_NAME}-forward-queue-unit-test
+            test/test_forward_queue.c)
+    target_include_directories(${PROJECT_NAME}-forward-queue-unit-test
             PRIVATE
                 "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
-    target_link_libraries(${PROJECT_NAME}-stack-unit-test
+    target_link_libraries(${PROJECT_NAME}-forward-queue-unit-test
             PRIVATE
                 ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}-stack-unit-test ${PROJECT_NAME}-stack-unit-test)
-    # aquarium-coral-red-black-tree-set-unit-test
-    add_executable(${PROJECT_NAME}-red-black-tree-set-unit-test
-            test/test_red_black_tree_set.c)
-    target_include_directories(${PROJECT_NAME}-red-black-tree-set-unit-test
+    add_test(${PROJECT_NAME}-forward-queue-unit-test
+            ${PROJECT_NAME}-forward-queue-unit-test)
+    # aquarium-coral-forward-stack-unit-test
+    add_executable(${PROJECT_NAME}-forward-stack-unit-test
+            test/test_forward_stack.c)
+    target_include_directories(${PROJECT_NAME}-forward-stack-unit-test
             PRIVATE
                 "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
-    target_link_libraries(${PROJECT_NAME}-red-black-tree-set-unit-test
+    target_link_libraries(${PROJECT_NAME}-forward-stack-unit-test
             PRIVATE
                 ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}-red-black-tree-set-unit-test
-            ${PROJECT_NAME}-red-black-tree-set-unit-test)
-    # aquarium-coral-red-black-tree-map-unit-test
-    add_executable(${PROJECT_NAME}-red-black-tree-map-unit-test
-            test/test_red_black_tree_map.c)
-    target_include_directories(${PROJECT_NAME}-red-black-tree-map-unit-test
-            PRIVATE
-                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
-    target_link_libraries(${PROJECT_NAME}-red-black-tree-map-unit-test
-            PRIVATE
-                ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}-red-black-tree-map-unit-test
-            ${PROJECT_NAME}-red-black-tree-map-unit-test)
-    # aquarium-coral-linked-red-black-tree-set-unit-test
-    add_executable(${PROJECT_NAME}-linked-red-black-tree-set-unit-test
-            test/test_linked_red_black_tree_set.c)
-    target_include_directories(${PROJECT_NAME}-linked-red-black-tree-set-unit-test
-            PRIVATE
-                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
-    target_link_libraries(${PROJECT_NAME}-linked-red-black-tree-set-unit-test
-            PRIVATE
-                ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}-linked-red-black-tree-set-unit-test
-            ${PROJECT_NAME}-linked-red-black-tree-set-unit-test)
-    # aquarium-coral-linked-queue-unit-test
-    add_executable(${PROJECT_NAME}-linked-queue-unit-test
-            test/test_linked_queue.c)
-    target_include_directories(${PROJECT_NAME}-linked-queue-unit-test
-            PRIVATE
-                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
-    target_link_libraries(${PROJECT_NAME}-linked-queue-unit-test
-            PRIVATE
-                ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}-linked-queue-unit-test
-            ${PROJECT_NAME}-linked-queue-unit-test)
-    # aquarium-coral-linked-stack-unit-test
-    add_executable(${PROJECT_NAME}-linked-stack-unit-test
-            test/test_linked_stack.c)
-    target_include_directories(${PROJECT_NAME}-linked-stack-unit-test
-            PRIVATE
-                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
-    target_link_libraries(${PROJECT_NAME}-linked-stack-unit-test
-            PRIVATE
-                ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}-linked-stack-unit-test
-            ${PROJECT_NAME}-linked-stack-unit-test)
+    add_test(${PROJECT_NAME}-forward-stack-unit-test
+            ${PROJECT_NAME}-forward-stack-unit-test)
     # aquarium-coral-array-list-unit-test
     add_executable(${PROJECT_NAME}-array-list-unit-test
             test/test_array_list.c)
@@ -149,6 +103,31 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
                 ${PROJECT_NAME})
     add_test(${PROJECT_NAME}-array-list-unit-test
             ${PROJECT_NAME}-array-list-unit-test)
+    # aquarium-coral-linked-red-black-tree-container-unit-test
+    add_executable(${PROJECT_NAME}-linked-red-black-tree-container-unit-test
+            test/test_linked_red_black_tree_container.c)
+    target_include_directories(
+            ${PROJECT_NAME}-linked-red-black-tree-container-unit-test
+            PRIVATE
+                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
+    target_link_libraries(
+            ${PROJECT_NAME}-linked-red-black-tree-container-unit-test
+            PRIVATE
+                ${PROJECT_NAME})
+    add_test(${PROJECT_NAME}-linked-red-black-tree-container-unit-test
+            ${PROJECT_NAME}-linked-red-black-tree-container-unit-test)
+    # aquarium-coral-red-black-tree-container-unit-test
+    add_executable(${PROJECT_NAME}-red-black-tree-container-unit-test
+            test/test_red_black_tree_container.c)
+    target_include_directories(
+            ${PROJECT_NAME}-red-black-tree-container-unit-test
+            PRIVATE
+                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
+    target_link_libraries(${PROJECT_NAME}-red-black-tree-container-unit-test
+            PRIVATE
+                ${PROJECT_NAME})
+    add_test(${PROJECT_NAME}-red-black-tree-container-unit-test
+            ${PROJECT_NAME}-red-black-tree-container-unit-test)
 else()
     add_library(${PROJECT_NAME} "")
     target_sources(${PROJECT_NAME}

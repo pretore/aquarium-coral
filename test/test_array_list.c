@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <setjmp.h>
 #include <cmocka.h>
-#include <string.h>
 #include <time.h>
 #include <coral.h>
 

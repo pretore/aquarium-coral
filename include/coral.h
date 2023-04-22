@@ -6,10 +6,9 @@
 #include <stdint.h>
 
 #include <coral/array_list.h>
-#include <coral/linked_queue.h>
-#include <coral/linked_red_black_tree_set.h>
-#include <coral/linked_stack.h>
-#include <coral/red_black_tree_map.h>
-#include <coral/red_black_tree_set.h>
+#include <coral/forward_queue.h>
+#include <coral/forward_stack.h>
+#include <coral/linked_red_black_tree_container.h>
+#include <coral/red_black_tree_container.h>
 
 #endif /* _CORAL_CORAL_H_ */
