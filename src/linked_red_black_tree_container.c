@@ -156,7 +156,7 @@ int coral_linked_red_black_tree_container_add(
                                            NULL,
                                            &A->rbt_node,
                                            &insertion_point))) {
-        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS;
+        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS;
     }
     seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
                            == error);
@@ -495,7 +495,7 @@ int coral_linked_red_black_tree_container_insert_after(
                                            NULL,
                                            &A->rbt_node,
                                            &insertion_point))) {
-        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS;
+        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS;
     }
     seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
                            == error);
@@ -528,7 +528,7 @@ int coral_linked_red_black_tree_container_insert_before(
                                            NULL,
                                            &A->rbt_node,
                                            &insertion_point))) {
-        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS;
+        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS;
     }
     seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
                            == error);
@@ -555,7 +555,7 @@ int coral_linked_red_black_tree_container_append(
     int error;
     if ((error = coral_linked_red_black_tree_container_add(object, entry))) {
         seagrass_required_true(
-                CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS
+                CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS
                 == error);
     }
     return error;
@@ -578,7 +578,7 @@ int coral_linked_red_black_tree_container_prepend(
                                            NULL,
                                            &A->rbt_node,
                                            &insertion_point))) {
-        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS;
+        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS;
     }
     seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
                            == error);

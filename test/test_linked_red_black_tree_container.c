@@ -153,7 +153,7 @@ static void check_add(void **state) {
                 break;
             }
             assert_int_equal(
-                    CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS,
+                    CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS,
                     error);
         }
     }
@@ -186,7 +186,7 @@ static void check_add_error_on_entry_already_exists(void **state) {
             coral_linked_red_black_tree_container_add(&object, item.entry), 0);
     assert_int_equal(
             coral_linked_red_black_tree_container_add(&object, item.entry),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS);
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
             &object, NULL), 0);
 }
@@ -890,7 +890,7 @@ static void check_insert_after(void **state) {
             break;
         }
         assert_int_equal(
-                CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS,
+                CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS,
                 error);
     }
     assert_int_equal(coral_linked_red_black_tree_container_count(
@@ -931,7 +931,7 @@ static void check_insert_after_error_on_entry_already_exits(void **state) {
     assert_int_equal(
             coral_linked_red_black_tree_container_insert_after(
                     &object, other.entry, item.entry),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS);
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS);
     assert_int_equal(coral_linked_red_black_tree_container_free(
             item.entry), 0);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
@@ -990,7 +990,7 @@ static void check_insert_before(void **state) {
             break;
         }
         assert_int_equal(
-                CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS,
+                CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS,
                 error);
     }
     assert_int_equal(coral_linked_red_black_tree_container_count(
@@ -1031,7 +1031,7 @@ static void check_insert_before_error_on_entry_already_exits(void **state) {
     assert_int_equal(
             coral_linked_red_black_tree_container_insert_before(
                     &object, other.entry, item.entry),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS);
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS);
     assert_int_equal(coral_linked_red_black_tree_container_free(
             item.entry), 0);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
@@ -1072,7 +1072,7 @@ static void check_append(void **state) {
                 break;
             }
             assert_int_equal(
-                    CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS,
+                    CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS,
                     error);
         }
     }
@@ -1105,7 +1105,7 @@ static void check_append_error_on_entry_already_exists(void **state) {
             &object, item.entry), 0);
     assert_int_equal(
             coral_linked_red_black_tree_container_append(&object, item.entry),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS);
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
             &object, NULL), 0);
 }
@@ -1144,7 +1144,7 @@ static void check_prepend(void **state) {
                 break;
             }
             assert_int_equal(
-                    CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS,
+                    CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS,
                     error);
         }
     }
@@ -1177,7 +1177,7 @@ static void check_prepend_error_on_entry_already_exists(void **state) {
             &object, item.entry), 0);
     assert_int_equal(
             coral_linked_red_black_tree_container_prepend(&object, item.entry),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS);
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
             &object, NULL), 0);
 }

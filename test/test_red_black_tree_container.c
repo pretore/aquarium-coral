@@ -165,7 +165,7 @@ static void check_add_error_on_entry_already_exits(void **state) {
             coral_red_black_tree_container_add(&object, item.entry), 0);
     assert_int_equal(
             coral_red_black_tree_container_add(&object, item.entry),
-            CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS);
+            CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS);
     assert_int_equal(coral_red_black_tree_container_invalidate(
             &object, NULL), 0);
 }

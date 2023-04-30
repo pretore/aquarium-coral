@@ -151,7 +151,7 @@ int coral_red_black_tree_container_add(
                                            NULL,
                                            &A->node,
                                            &insertion_point))) {
-        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS;
+        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS;
     }
     seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
                            == error);
