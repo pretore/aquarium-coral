@@ -294,7 +294,7 @@ int coral_linked_red_black_tree_container_last(
  * are no next entries.
  */
 int coral_linked_red_black_tree_container_next(
-        struct coral_linked_red_black_tree_container_entry *entry,
+        const struct coral_linked_red_black_tree_container_entry *entry,
         struct coral_linked_red_black_tree_container_entry **out);
 
 /**
@@ -310,7 +310,7 @@ int coral_linked_red_black_tree_container_next(
  * are no previous entries.
  */
 int coral_linked_red_black_tree_container_prev(
-        struct coral_linked_red_black_tree_container_entry *entry,
+        const struct coral_linked_red_black_tree_container_entry *entry,
         struct coral_linked_red_black_tree_container_entry **out);
 
 /**
