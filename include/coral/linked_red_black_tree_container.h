@@ -249,6 +249,71 @@ int coral_linked_red_black_tree_container_lower(
         const struct coral_linked_red_black_tree_container *object,
         const void *key,
         struct coral_linked_red_black_tree_container_entry **out);
+
+/**
+ * @brief Receive lowest entry.
+ * @param [in] object container instance.
+ * @param [out] out receive lowest entry.
+ * @return On success <i>0</i>, otherwise an error code.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL if
+ * object is <i>NULL</i>.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL if out is
+ * <i>NULL</i>.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_CONTAINER_IS_EMPTY if
+ * container is empty.
+ */
+int coral_linked_red_black_tree_container_lowest(
+        const struct coral_linked_red_black_tree_container *object,
+        struct coral_linked_red_black_tree_container_entry **out);
+
+/**
+ * @brief Receive highest entry.
+ * @param [in] object container instance.
+ * @param [out] out receive highest entry.
+ * @return On success <i>0</i>, otherwise an error code.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL if
+ * object is <i>NULL</i>.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL if out is
+ * <i>NULL</i>.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_CONTAINER_IS_EMPTY if
+ * container is empty.
+ */
+int coral_linked_red_black_tree_container_highest(
+        const struct coral_linked_red_black_tree_container *object,
+        struct coral_linked_red_black_tree_container_entry **out);
+
+/**
+ * @brief Retrieve the next higher entry.
+ * @param [in] entry current one.
+ * @param [out] out receive the next higher entry.
+ * @return On success <i>0</i>, otherwise an error code.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL if entry
+ * is <i>NULL</i>.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL if out is
+ * <i>NULL</i>.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE if there
+ * are no next entries.
+ */
+int coral_linked_red_black_tree_container_higher_entry(
+        const struct coral_linked_red_black_tree_container_entry *entry,
+        struct coral_linked_red_black_tree_container_entry **out);
+
+/**
+ * @brief Retrieve the next lower entry.
+ * @param [in] entry current one.
+ * @param [out] out receive the next lower entry.
+ * @return On success <i>0</i>, otherwise an error code.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL if entry
+ * is <i>NULL</i>.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL if out is
+ * <i>NULL</i>.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE if there
+ * are no previous entries.
+ */
+int coral_linked_red_black_tree_container_lower_entry(
+        const struct coral_linked_red_black_tree_container_entry *entry,
+        struct coral_linked_red_black_tree_container_entry **out);
+
 /**
  * @brief Receive first entry.
  * @param [in] object container instance.
@@ -283,9 +348,12 @@ int coral_linked_red_black_tree_container_last(
 
 /**
  * @brief Retrieve the next entry.
+ * @param [in] object container instance.
  * @param [in] entry current one.
  * @param [out] out receive the next entry.
  * @return On success <i>0</i>, otherwise an error code.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL if
+ * object is <i>NULL</i>.
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL if entry
  * is <i>NULL</i>.
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL if out is
@@ -294,14 +362,18 @@ int coral_linked_red_black_tree_container_last(
  * are no next entries.
  */
 int coral_linked_red_black_tree_container_next(
+        const struct coral_linked_red_black_tree_container *object,
         const struct coral_linked_red_black_tree_container_entry *entry,
         struct coral_linked_red_black_tree_container_entry **out);
 
 /**
  * @brief Retrieve the previous entry.
+ * @param [in] object container instance.
  * @param [in] entry current one.
  * @param [out] out receive the previous entry.
  * @return On success <i>0</i>, otherwise an error code.
+ * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL if
+ * object is <i>NULL</i>.
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL if entry
  * is <i>NULL</i>.
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL if out is
@@ -310,6 +382,7 @@ int coral_linked_red_black_tree_container_next(
  * are no previous entries.
  */
 int coral_linked_red_black_tree_container_prev(
+        const struct coral_linked_red_black_tree_container *object,
         const struct coral_linked_red_black_tree_container_entry *entry,
         struct coral_linked_red_black_tree_container_entry **out);
 

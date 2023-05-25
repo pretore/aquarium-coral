@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <assert.h>
 #include <errno.h>
 #include <seagrass.h>
 #include <coral.h>
@@ -100,7 +101,8 @@ int coral_linked_red_black_tree_container_invalidate(
     } else {
         while (true) {
             struct coral_linked_red_black_tree_container_entry *next;
-            if ((error = coral_linked_red_black_tree_container_next(entry, &next))) {
+            if ((error = coral_linked_red_black_tree_container_next(
+                    object, entry, &next))) {
                 seagrass_required_true(
                         CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE
                         == error);
@@ -112,11 +114,10 @@ int coral_linked_red_black_tree_container_invalidate(
             }
             seagrass_required_true(!coral_linked_red_black_tree_container_free(
                     entry));
-            if (!error) {
-                entry = next;
-            } else {
+            if (error) {
                 break;
             }
+            entry = next;
         }
     }
     seagrass_required_true(!rock_red_black_tree_invalidate(
@@ -389,6 +390,96 @@ int coral_linked_red_black_tree_container_lower(
     return 0;
 }
 
+int coral_linked_red_black_tree_container_lowest(
+        const struct coral_linked_red_black_tree_container *const object,
+        struct coral_linked_red_black_tree_container_entry **const out) {
+    if (!object) {
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL;
+    }
+    if (!out) {
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL;
+    }
+    int error;
+    struct rock_red_black_tree_node *node;
+    if ((error = rock_red_black_tree_first(&object->tree, &node))) {
+        seagrass_required_true(
+                ROCK_RED_BLACK_TREE_ERROR_TREE_IS_EMPTY
+                == error);
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_CONTAINER_IS_EMPTY;
+    }
+    struct entry *const A = rock_container_of(node, struct entry, rbt_node);
+    *out = (struct coral_linked_red_black_tree_container_entry *) &A->data;
+    return 0;
+}
+
+int coral_linked_red_black_tree_container_highest(
+        const struct coral_linked_red_black_tree_container *const object,
+        struct coral_linked_red_black_tree_container_entry **const out) {
+    if (!object) {
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL;
+    }
+    if (!out) {
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL;
+    }
+    int error;
+    struct rock_red_black_tree_node *node;
+    if ((error = rock_red_black_tree_last(&object->tree, &node))) {
+        seagrass_required_true(
+                ROCK_RED_BLACK_TREE_ERROR_TREE_IS_EMPTY
+                == error);
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_CONTAINER_IS_EMPTY;
+    }
+    struct entry *const A = rock_container_of(node, struct entry, rbt_node);
+    *out = (struct coral_linked_red_black_tree_container_entry *) &A->data;
+    return 0;
+}
+
+int coral_linked_red_black_tree_container_higher_entry(
+        const struct coral_linked_red_black_tree_container_entry *const entry,
+        struct coral_linked_red_black_tree_container_entry **const out) {
+    if (!entry) {
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL;
+    }
+    if (!out) {
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL;
+    }
+    int error;
+    struct entry *const A = rock_container_of(entry, struct entry, data);
+    struct rock_red_black_tree_node *node;
+    if ((error = rock_red_black_tree_next(&A->rbt_node, &node))) {
+        seagrass_required_true(
+                ROCK_RED_BLACK_TREE_ERROR_END_OF_SEQUENCE
+                == error);
+        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE;
+    }
+    struct entry *const B = rock_container_of(node, struct entry, rbt_node);
+    *out = (struct coral_linked_red_black_tree_container_entry *) &B->data;
+    return 0;
+}
+
+int coral_linked_red_black_tree_container_lower_entry(
+        const struct coral_linked_red_black_tree_container_entry *const entry,
+        struct coral_linked_red_black_tree_container_entry **const out) {
+    if (!entry) {
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL;
+    }
+    if (!out) {
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL;
+    }
+    int error;
+    struct entry *const A = rock_container_of(entry, struct entry, data);
+    struct rock_red_black_tree_node *node;
+    if ((error = rock_red_black_tree_prev(&A->rbt_node, &node))) {
+        seagrass_required_true(
+                ROCK_RED_BLACK_TREE_ERROR_END_OF_SEQUENCE
+                == error);
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE;
+    }
+    struct entry *const B = rock_container_of(node, struct entry, rbt_node);
+    *out = (struct coral_linked_red_black_tree_container_entry *) &B->data;
+    return 0;
+}
+
 int coral_linked_red_black_tree_container_first(
         const struct coral_linked_red_black_tree_container *const object,
         struct coral_linked_red_black_tree_container_entry **const out) {
@@ -431,8 +522,12 @@ int coral_linked_red_black_tree_container_last(
 }
 
 int coral_linked_red_black_tree_container_next(
+        const struct coral_linked_red_black_tree_container *const object,
         const struct coral_linked_red_black_tree_container_entry *const entry,
         struct coral_linked_red_black_tree_container_entry **const out) {
+    if (!object) {
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL;
+    }
     if (!entry) {
         return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL;
     }
@@ -443,7 +538,7 @@ int coral_linked_red_black_tree_container_next(
     struct rock_linked_list_node *node;
     seagrass_required_true(!rock_linked_list_next(
             &B->ll_node, &node));
-    if (&B->ll_node == node) {
+    if (&B->ll_node == node || object->list == node) {
         return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE;
     }
     const struct entry *const A
@@ -453,8 +548,12 @@ int coral_linked_red_black_tree_container_next(
 }
 
 int coral_linked_red_black_tree_container_prev(
+        const struct coral_linked_red_black_tree_container *const object,
         const struct coral_linked_red_black_tree_container_entry *const entry,
         struct coral_linked_red_black_tree_container_entry **const out) {
+    if (!object) {
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL;
+    }
     if (!entry) {
         return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL;
     }
@@ -462,6 +561,9 @@ int coral_linked_red_black_tree_container_prev(
         return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL;
     }
     const struct entry *const B = rock_container_of(entry, struct entry, data);
+    if (&B->ll_node == object->list) {
+        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE;
+    }
     struct rock_linked_list_node *node;
     seagrass_required_true(!rock_linked_list_prev(
             &B->ll_node, &node));

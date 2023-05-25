@@ -165,7 +165,8 @@ static void check_add(void **state) {
             &object, &item.entry), 0);
     for (uintmax_t i = 0; i < limit; i++) {
         assert_int_equal(*item.value, values[i]);
-        coral_linked_red_black_tree_container_next(item.entry, &item.entry);
+        coral_linked_red_black_tree_container_next(
+                &object, item.entry, &item.entry);
     }
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
             &object, NULL), 0);
@@ -608,6 +609,246 @@ static void check_lower_error_on_entity_not_found(void **state) {
             &object, NULL), 0);
 }
 
+static void check_lowest_error_on_object_is_null(void **state) {
+    assert_int_equal(
+            coral_linked_red_black_tree_container_lowest(NULL, (void *) 1),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL);
+}
+
+static void check_lowest_error_on_out_is_null(void **state) {
+    assert_int_equal(
+            coral_linked_red_black_tree_container_lowest((void *) 1, NULL),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL);
+}
+
+static void check_lowest(void **state) {
+    struct coral_linked_red_black_tree_container object;
+    assert_int_equal(coral_linked_red_black_tree_container_init(
+            &object, compare), 0);
+    const uintmax_t count = 3;
+    union entry {
+        struct coral_linked_red_black_tree_container_entry *entry;
+        uintmax_t *value;
+    } item[count];
+    for (uintmax_t i = 0; i < count; i++) {
+        assert_int_equal(coral_linked_red_black_tree_container_alloc(
+                sizeof(uintmax_t), &item[i].entry), 0);
+        *item[i].value = i * i;
+        assert_int_equal(coral_linked_red_black_tree_container_add(
+                &object, item[i].entry), 0);
+    }
+    union entry other;
+    assert_int_equal(coral_linked_red_black_tree_container_lowest(
+            &object, &other.entry), 0);
+    assert_int_equal(*item[0].value, *other.value);
+    assert_ptr_equal(item[0].entry, other.entry);
+    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
+            &object, NULL), 0);
+}
+
+static void check_lowest_error_on_container_is_empty(void **state) {
+    struct coral_linked_red_black_tree_container object;
+    assert_int_equal(coral_linked_red_black_tree_container_init(
+            &object, compare), 0);
+    union entry {
+        struct coral_linked_red_black_tree_container_entry *entry;
+        uintmax_t *value;
+    } item;
+    assert_int_equal(
+            coral_linked_red_black_tree_container_lowest(&object, &item.entry),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_CONTAINER_IS_EMPTY);
+    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
+            &object, NULL), 0);
+}
+
+static void check_highest_error_on_object_is_null(void **state) {
+    assert_int_equal(
+            coral_linked_red_black_tree_container_highest(NULL, (void *) 1),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL);
+}
+
+static void check_highest_error_on_out_is_null(void **state) {
+    assert_int_equal(
+            coral_linked_red_black_tree_container_highest((void *) 1, NULL),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL);
+}
+
+static void check_highest(void **state) {
+    struct coral_linked_red_black_tree_container object;
+    assert_int_equal(coral_linked_red_black_tree_container_init(
+            &object, compare), 0);
+    const uintmax_t count = 3;
+    union entry {
+        struct coral_linked_red_black_tree_container_entry *entry;
+        uintmax_t *value;
+    } item[count];
+    for (uintmax_t i = 0; i < count; i++) {
+        assert_int_equal(coral_linked_red_black_tree_container_alloc(
+                sizeof(uintmax_t), &item[i].entry), 0);
+        *item[i].value = i * i;
+        assert_int_equal(coral_linked_red_black_tree_container_add(
+                &object, item[i].entry), 0);
+    }
+    union entry other;
+    assert_int_equal(coral_linked_red_black_tree_container_highest(
+            &object, &other.entry), 0);
+    assert_int_equal(*item[2].value, *other.value);
+    assert_ptr_equal(item[2].entry, other.entry);
+    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
+            &object, NULL), 0);
+}
+
+static void check_highest_error_on_container_is_empty(void **state) {
+    struct coral_linked_red_black_tree_container object;
+    assert_int_equal(coral_linked_red_black_tree_container_init(
+            &object, compare), 0);
+    union entry {
+        struct coral_linked_red_black_tree_container_entry *entry;
+        uintmax_t *value;
+    } item;
+    assert_int_equal(
+            coral_linked_red_black_tree_container_highest(&object, &item.entry),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_CONTAINER_IS_EMPTY);
+    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
+            &object, NULL), 0);
+}
+
+static void check_higher_entry_error_on_entry_is_null(void **state) {
+    assert_ptr_equal(
+            coral_linked_red_black_tree_container_higher_entry(
+                    NULL, (void *) 1),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL);
+}
+
+static void check_higher_entry_error_on_out_is_null(void **state) {
+    assert_ptr_equal(
+            coral_linked_red_black_tree_container_higher_entry(
+                    (void *) 1, NULL),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL);
+}
+
+static void check_higher_entry(void **state) {
+    struct coral_linked_red_black_tree_container object;
+    assert_int_equal(coral_linked_red_black_tree_container_init(
+            &object, compare), 0);
+    const uintmax_t count = 3;
+    union entry {
+        struct coral_linked_red_black_tree_container_entry *entry;
+        uintmax_t *value;
+    } item[count];
+    for (uintmax_t i = 0; i < count; i++) {
+        assert_int_equal(coral_linked_red_black_tree_container_alloc(
+                sizeof(uintmax_t), &item[i].entry), 0);
+        *item[i].value = i * i;
+        assert_int_equal(coral_linked_red_black_tree_container_add(
+                &object, item[i].entry), 0);
+    }
+    union entry other;
+    assert_int_equal(coral_linked_red_black_tree_container_lowest(
+            &object, &other.entry), 0);
+    assert_int_equal(coral_linked_red_black_tree_container_higher_entry(
+            other.entry, &other.entry), 0);
+    assert_int_equal(*item[1].value, *other.value);
+    assert_ptr_equal(item[1].entry, other.entry);
+    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
+            &object, NULL), 0);
+}
+
+static void check_higher_entry_error_on_end_of_sequence(void **state) {
+    struct coral_linked_red_black_tree_container object;
+    assert_int_equal(coral_linked_red_black_tree_container_init(
+            &object, compare), 0);
+    const uintmax_t count = 1;
+    union entry {
+        struct coral_linked_red_black_tree_container_entry *entry;
+        uintmax_t *value;
+    } item[count];
+    for (uintmax_t i = 0; i < count; i++) {
+        assert_int_equal(coral_linked_red_black_tree_container_alloc(
+                sizeof(uintmax_t), &item[i].entry), 0);
+        *item[i].value = i;
+        assert_int_equal(coral_linked_red_black_tree_container_add(
+                &object, item[i].entry), 0);
+    }
+    union entry other;
+    assert_int_equal(coral_linked_red_black_tree_container_lowest(
+            &object, &other.entry), 0);
+    assert_int_equal(
+            coral_linked_red_black_tree_container_higher_entry(
+                    other.entry, &other.entry),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE);
+    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
+            &object, NULL), 0);
+}
+
+static void check_lower_entry_error_on_entry_is_null(void **state) {
+    assert_ptr_equal(
+            coral_linked_red_black_tree_container_lower_entry(
+                    NULL, (void *) 1),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL);
+}
+
+static void check_lower_entry_error_on_out_is_null(void **state) {
+    assert_ptr_equal(
+            coral_linked_red_black_tree_container_lower_entry(
+                    (void *) 1, NULL),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL);
+}
+
+static void check_lower_entry(void **state) {
+    struct coral_linked_red_black_tree_container object;
+    assert_int_equal(coral_linked_red_black_tree_container_init(
+            &object, compare), 0);
+    const uintmax_t count = 3;
+    union entry {
+        struct coral_linked_red_black_tree_container_entry *entry;
+        uintmax_t *value;
+    } item[count];
+    for (uintmax_t i = 0; i < count; i++) {
+        assert_int_equal(coral_linked_red_black_tree_container_alloc(
+                sizeof(uintmax_t), &item[i].entry), 0);
+        *item[i].value = i * i;
+        assert_int_equal(coral_linked_red_black_tree_container_add(
+                &object, item[i].entry), 0);
+    }
+    union entry other;
+    assert_int_equal(coral_linked_red_black_tree_container_highest(
+            &object, &other.entry), 0);
+    assert_int_equal(coral_linked_red_black_tree_container_lower_entry(
+            other.entry, &other.entry), 0);
+    assert_int_equal(*item[1].value, *other.value);
+    assert_ptr_equal(item[1].entry, other.entry);
+    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
+            &object, NULL), 0);
+}
+
+static void check_lower_entry_error_on_end_of_sequence(void **state) {
+    struct coral_linked_red_black_tree_container object;
+    assert_int_equal(coral_linked_red_black_tree_container_init(
+            &object, compare), 0);
+    const uintmax_t count = 1;
+    union entry {
+        struct coral_linked_red_black_tree_container_entry *entry;
+        uintmax_t *value;
+    } item[count];
+    for (uintmax_t i = 0; i < count; i++) {
+        assert_int_equal(coral_linked_red_black_tree_container_alloc(
+                sizeof(uintmax_t), &item[i].entry), 0);
+        *item[i].value = i;
+        assert_int_equal(coral_linked_red_black_tree_container_add(
+                &object, item[i].entry), 0);
+    }
+    union entry other;
+    assert_int_equal(coral_linked_red_black_tree_container_highest(
+            &object, &other.entry), 0);
+    assert_int_equal(
+            coral_linked_red_black_tree_container_lower_entry(
+                    other.entry, &other.entry),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE);
+    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
+            &object, NULL), 0);
+}
+
 static void check_first_error_on_object_is_null(void **state) {
     assert_int_equal(
             coral_linked_red_black_tree_container_first(NULL, (void *) 1),
@@ -712,15 +953,24 @@ static void check_last_error_on_container_is_empty(void **state) {
             &object, NULL), 0);
 }
 
+static void check_next_error_on_object_is_null(void **state) {
+    assert_ptr_equal(
+            coral_linked_red_black_tree_container_next(
+                    NULL, (void *) 1, (void *) 1),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL);
+}
+
 static void check_next_error_on_entry_is_null(void **state) {
     assert_ptr_equal(
-            coral_linked_red_black_tree_container_next(NULL, (void *) 1),
+            coral_linked_red_black_tree_container_next(
+                    (void *) 1, NULL, (void *) 1),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL);
 }
 
 static void check_next_error_on_out_is_null(void **state) {
     assert_ptr_equal(
-            coral_linked_red_black_tree_container_next((void *) 1, NULL),
+            coral_linked_red_black_tree_container_next(
+                    (void *) 1, (void *) 1, NULL),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL);
 }
 
@@ -744,7 +994,7 @@ static void check_next(void **state) {
     assert_int_equal(coral_linked_red_black_tree_container_first(
             &object, &other.entry), 0);
     assert_int_equal(coral_linked_red_black_tree_container_next(
-            other.entry, &other.entry), 0);
+            &object, other.entry, &other.entry), 0);
     assert_int_equal(*item[1].value, *other.value);
     assert_ptr_equal(item[1].entry, other.entry);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
@@ -755,35 +1005,47 @@ static void check_next_error_on_end_of_sequence(void **state) {
     struct coral_linked_red_black_tree_container object;
     assert_int_equal(coral_linked_red_black_tree_container_init(
             &object, compare), 0);
+    const uintmax_t count = 3;
     union entry {
         struct coral_linked_red_black_tree_container_entry *entry;
         uintmax_t *value;
-    } item;
-    assert_int_equal(coral_linked_red_black_tree_container_alloc(
-            sizeof(uintmax_t), &item.entry), 0);
-    *item.value = 0;
-    assert_int_equal(coral_linked_red_black_tree_container_add(
-            &object, item.entry), 0);
+    } item[count];
+    for (uintmax_t i = 0; i < count; i++) {
+        assert_int_equal(coral_linked_red_black_tree_container_alloc(
+                sizeof(uintmax_t), &item[i].entry), 0);
+        *item[i].value = i * i;
+        assert_int_equal(coral_linked_red_black_tree_container_add(
+                &object, item[i].entry), 0);
+    }
     union entry other;
-    assert_int_equal(coral_linked_red_black_tree_container_first(
+    assert_int_equal(coral_linked_red_black_tree_container_last(
             &object, &other.entry), 0);
     assert_int_equal(
             coral_linked_red_black_tree_container_next(
-                    other.entry, &other.entry),
+                    &object, other.entry, &other.entry),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
             &object, NULL), 0);
 }
 
+static void check_prev_error_on_object_is_null(void **state) {
+    assert_ptr_equal(
+            coral_linked_red_black_tree_container_prev(
+                    NULL, (void *) 1, (void *) 1),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL);
+}
+
 static void check_prev_error_on_entry_is_null(void **state) {
     assert_ptr_equal(
-            coral_linked_red_black_tree_container_prev(NULL, (void *) 1),
+            coral_linked_red_black_tree_container_prev(
+                    (void *) 1, NULL, (void *) 1),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL);
 }
 
 static void check_prev_error_on_out_is_null(void **state) {
     assert_ptr_equal(
-            coral_linked_red_black_tree_container_prev((void *) 1, NULL),
+            coral_linked_red_black_tree_container_prev(
+                    (void *) 1, (void *) 1, NULL),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL);
 }
 
@@ -807,7 +1069,7 @@ static void check_prev(void **state) {
     assert_int_equal(coral_linked_red_black_tree_container_last(
             &object, &other.entry), 0);
     assert_int_equal(coral_linked_red_black_tree_container_prev(
-            other.entry, &other.entry), 0);
+            &object, other.entry, &other.entry), 0);
     assert_int_equal(*item[1].value, *other.value);
     assert_ptr_equal(item[1].entry, other.entry);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
@@ -818,21 +1080,24 @@ static void check_prev_error_on_end_of_sequence(void **state) {
     struct coral_linked_red_black_tree_container object;
     assert_int_equal(coral_linked_red_black_tree_container_init(
             &object, compare), 0);
+    const uintmax_t count = 3;
     union entry {
         struct coral_linked_red_black_tree_container_entry *entry;
         uintmax_t *value;
-    } item;
+    } item[count];
+    for (uintmax_t i = 0; i < count; i++) {
         assert_int_equal(coral_linked_red_black_tree_container_alloc(
-                sizeof(uintmax_t), &item.entry), 0);
-        *item.value = 0;
+                sizeof(uintmax_t), &item[i].entry), 0);
+        *item[i].value = i * i;
         assert_int_equal(coral_linked_red_black_tree_container_add(
-                &object, item.entry), 0);
+                &object, item[i].entry), 0);
+    }
     union entry other;
-    assert_int_equal(coral_linked_red_black_tree_container_last(
+    assert_int_equal(coral_linked_red_black_tree_container_first(
             &object, &other.entry), 0);
     assert_int_equal(
             coral_linked_red_black_tree_container_prev(
-                    other.entry, &other.entry),
+                    &object, other.entry, &other.entry),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
             &object, NULL), 0);
@@ -1084,7 +1349,8 @@ static void check_append(void **state) {
             &object, &item.entry), 0);
     for (uintmax_t i = 0; i < limit; i++) {
         assert_int_equal(*item.value, values[i]);
-        coral_linked_red_black_tree_container_next(item.entry, &item.entry);
+        coral_linked_red_black_tree_container_next(
+                &object, item.entry, &item.entry);
     }
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
             &object, NULL), 0);
@@ -1156,7 +1422,8 @@ static void check_prepend(void **state) {
             &object, &item.entry), 0);
     for (uintmax_t i = limit - 1; i < limit; i--) {
         assert_int_equal(*item.value, values[i]);
-        coral_linked_red_black_tree_container_next(item.entry, &item.entry);
+        coral_linked_red_black_tree_container_next(
+                &object, item.entry, &item.entry);
     }
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
             &object, NULL), 0);
@@ -1231,6 +1498,22 @@ int main(int argc, char *argv[]) {
             cmocka_unit_test(check_lower_error_on_out_is_null),
             cmocka_unit_test(check_lower),
             cmocka_unit_test(check_lower_error_on_entity_not_found),
+            cmocka_unit_test(check_lowest_error_on_object_is_null),
+            cmocka_unit_test(check_lowest_error_on_out_is_null),
+            cmocka_unit_test(check_lowest),
+            cmocka_unit_test(check_lowest_error_on_container_is_empty),
+            cmocka_unit_test(check_highest_error_on_object_is_null),
+            cmocka_unit_test(check_highest_error_on_out_is_null),
+            cmocka_unit_test(check_highest),
+            cmocka_unit_test(check_highest_error_on_container_is_empty),
+            cmocka_unit_test(check_higher_entry_error_on_entry_is_null),
+            cmocka_unit_test(check_higher_entry_error_on_out_is_null),
+            cmocka_unit_test(check_higher_entry),
+            cmocka_unit_test(check_higher_entry_error_on_end_of_sequence),
+            cmocka_unit_test(check_lower_entry_error_on_entry_is_null),
+            cmocka_unit_test(check_lower_entry_error_on_out_is_null),
+            cmocka_unit_test(check_lower_entry),
+            cmocka_unit_test(check_lower_entry_error_on_end_of_sequence),
             cmocka_unit_test(check_first_error_on_object_is_null),
             cmocka_unit_test(check_first_error_on_out_is_null),
             cmocka_unit_test(check_first),
@@ -1239,6 +1522,7 @@ int main(int argc, char *argv[]) {
             cmocka_unit_test(check_last_error_on_out_is_null),
             cmocka_unit_test(check_last),
             cmocka_unit_test(check_last_error_on_container_is_empty),
+            cmocka_unit_test(check_next_error_on_object_is_null),
             cmocka_unit_test(check_next_error_on_entry_is_null),
             cmocka_unit_test(check_next_error_on_out_is_null),
             cmocka_unit_test(check_next),
