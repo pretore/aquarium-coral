@@ -251,9 +251,9 @@ int coral_linked_red_black_tree_container_lower(
         struct coral_linked_red_black_tree_container_entry **out);
 
 /**
- * @brief Receive lowest entry.
+ * @brief Receive sorted first entry.
  * @param [in] object container instance.
- * @param [out] out receive lowest entry.
+ * @param [out] out receive sorted first entry.
  * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL if
  * object is <i>NULL</i>.
@@ -262,14 +262,14 @@ int coral_linked_red_black_tree_container_lower(
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_CONTAINER_IS_EMPTY if
  * container is empty.
  */
-int coral_linked_red_black_tree_container_lowest(
+int coral_linked_red_black_tree_container_sorted_first(
         const struct coral_linked_red_black_tree_container *object,
         struct coral_linked_red_black_tree_container_entry **out);
 
 /**
- * @brief Receive highest entry.
+ * @brief Receive sorted last entry.
  * @param [in] object container instance.
- * @param [out] out receive highest entry.
+ * @param [out] out receive sorted last entry.
  * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL if
  * object is <i>NULL</i>.
@@ -278,14 +278,14 @@ int coral_linked_red_black_tree_container_lowest(
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_CONTAINER_IS_EMPTY if
  * container is empty.
  */
-int coral_linked_red_black_tree_container_highest(
+int coral_linked_red_black_tree_container_sorted_last(
         const struct coral_linked_red_black_tree_container *object,
         struct coral_linked_red_black_tree_container_entry **out);
 
 /**
- * @brief Retrieve the next higher entry.
+ * @brief Retrieve the next sorted entry.
  * @param [in] entry current one.
- * @param [out] out receive the next higher entry.
+ * @param [out] out receive the next sorted entry.
  * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL if entry
  * is <i>NULL</i>.
@@ -294,14 +294,14 @@ int coral_linked_red_black_tree_container_highest(
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE if there
  * are no next entries.
  */
-int coral_linked_red_black_tree_container_higher_entry(
+int coral_linked_red_black_tree_container_sorted_next(
         const struct coral_linked_red_black_tree_container_entry *entry,
         struct coral_linked_red_black_tree_container_entry **out);
 
 /**
- * @brief Retrieve the next lower entry.
+ * @brief Retrieve the previous sorted entry.
  * @param [in] entry current one.
- * @param [out] out receive the next lower entry.
+ * @param [out] out receive the previous sorted entry.
  * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL if entry
  * is <i>NULL</i>.
@@ -310,7 +310,7 @@ int coral_linked_red_black_tree_container_higher_entry(
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE if there
  * are no previous entries.
  */
-int coral_linked_red_black_tree_container_lower_entry(
+int coral_linked_red_black_tree_container_sorted_prev(
         const struct coral_linked_red_black_tree_container_entry *entry,
         struct coral_linked_red_black_tree_container_entry **out);
 

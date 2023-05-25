@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(aquarium-coral VERSION 4.0.0
+project(aquarium-coral VERSION 5.0.0
         LANGUAGES C
         DESCRIPTION "Generic data structures in C")
 

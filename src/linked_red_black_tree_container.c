@@ -390,7 +390,7 @@ int coral_linked_red_black_tree_container_lower(
     return 0;
 }
 
-int coral_linked_red_black_tree_container_lowest(
+int coral_linked_red_black_tree_container_sorted_first(
         const struct coral_linked_red_black_tree_container *const object,
         struct coral_linked_red_black_tree_container_entry **const out) {
     if (!object) {
@@ -412,7 +412,7 @@ int coral_linked_red_black_tree_container_lowest(
     return 0;
 }
 
-int coral_linked_red_black_tree_container_highest(
+int coral_linked_red_black_tree_container_sorted_last(
         const struct coral_linked_red_black_tree_container *const object,
         struct coral_linked_red_black_tree_container_entry **const out) {
     if (!object) {
@@ -434,7 +434,7 @@ int coral_linked_red_black_tree_container_highest(
     return 0;
 }
 
-int coral_linked_red_black_tree_container_higher_entry(
+int coral_linked_red_black_tree_container_sorted_next(
         const struct coral_linked_red_black_tree_container_entry *const entry,
         struct coral_linked_red_black_tree_container_entry **const out) {
     if (!entry) {
@@ -457,7 +457,7 @@ int coral_linked_red_black_tree_container_higher_entry(
     return 0;
 }
 
-int coral_linked_red_black_tree_container_lower_entry(
+int coral_linked_red_black_tree_container_sorted_prev(
         const struct coral_linked_red_black_tree_container_entry *const entry,
         struct coral_linked_red_black_tree_container_entry **const out) {
     if (!entry) {

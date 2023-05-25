@@ -609,19 +609,21 @@ static void check_lower_error_on_entity_not_found(void **state) {
             &object, NULL), 0);
 }
 
-static void check_lowest_error_on_object_is_null(void **state) {
+static void check_sorted_first_error_on_object_is_null(void **state) {
     assert_int_equal(
-            coral_linked_red_black_tree_container_lowest(NULL, (void *) 1),
+            coral_linked_red_black_tree_container_sorted_first(
+                    NULL, (void *) 1),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL);
 }
 
-static void check_lowest_error_on_out_is_null(void **state) {
+static void check_sorted_first_error_on_out_is_null(void **state) {
     assert_int_equal(
-            coral_linked_red_black_tree_container_lowest((void *) 1, NULL),
+            coral_linked_red_black_tree_container_sorted_first(
+                    (void *) 1, NULL),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL);
 }
 
-static void check_lowest(void **state) {
+static void check_sorted_first(void **state) {
     struct coral_linked_red_black_tree_container object;
     assert_int_equal(coral_linked_red_black_tree_container_init(
             &object, compare), 0);
@@ -638,7 +640,7 @@ static void check_lowest(void **state) {
                 &object, item[i].entry), 0);
     }
     union entry other;
-    assert_int_equal(coral_linked_red_black_tree_container_lowest(
+    assert_int_equal(coral_linked_red_black_tree_container_sorted_first(
             &object, &other.entry), 0);
     assert_int_equal(*item[0].value, *other.value);
     assert_ptr_equal(item[0].entry, other.entry);
@@ -646,7 +648,7 @@ static void check_lowest(void **state) {
             &object, NULL), 0);
 }
 
-static void check_lowest_error_on_container_is_empty(void **state) {
+static void check_sorted_first_error_on_container_is_empty(void **state) {
     struct coral_linked_red_black_tree_container object;
     assert_int_equal(coral_linked_red_black_tree_container_init(
             &object, compare), 0);
@@ -655,25 +657,28 @@ static void check_lowest_error_on_container_is_empty(void **state) {
         uintmax_t *value;
     } item;
     assert_int_equal(
-            coral_linked_red_black_tree_container_lowest(&object, &item.entry),
+            coral_linked_red_black_tree_container_sorted_first(
+                    &object, &item.entry),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_CONTAINER_IS_EMPTY);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
             &object, NULL), 0);
 }
 
-static void check_highest_error_on_object_is_null(void **state) {
+static void check_sorted_last_error_on_object_is_null(void **state) {
     assert_int_equal(
-            coral_linked_red_black_tree_container_highest(NULL, (void *) 1),
+            coral_linked_red_black_tree_container_sorted_last(
+                    NULL, (void *) 1),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL);
 }
 
-static void check_highest_error_on_out_is_null(void **state) {
+static void check_sorted_last_error_on_out_is_null(void **state) {
     assert_int_equal(
-            coral_linked_red_black_tree_container_highest((void *) 1, NULL),
+            coral_linked_red_black_tree_container_sorted_last(
+                    (void *) 1, NULL),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL);
 }
 
-static void check_highest(void **state) {
+static void check_sorted_last(void **state) {
     struct coral_linked_red_black_tree_container object;
     assert_int_equal(coral_linked_red_black_tree_container_init(
             &object, compare), 0);
@@ -690,7 +695,7 @@ static void check_highest(void **state) {
                 &object, item[i].entry), 0);
     }
     union entry other;
-    assert_int_equal(coral_linked_red_black_tree_container_highest(
+    assert_int_equal(coral_linked_red_black_tree_container_sorted_last(
             &object, &other.entry), 0);
     assert_int_equal(*item[2].value, *other.value);
     assert_ptr_equal(item[2].entry, other.entry);
@@ -698,7 +703,7 @@ static void check_highest(void **state) {
             &object, NULL), 0);
 }
 
-static void check_highest_error_on_container_is_empty(void **state) {
+static void check_sorted_last_error_on_container_is_empty(void **state) {
     struct coral_linked_red_black_tree_container object;
     assert_int_equal(coral_linked_red_black_tree_container_init(
             &object, compare), 0);
@@ -707,27 +712,28 @@ static void check_highest_error_on_container_is_empty(void **state) {
         uintmax_t *value;
     } item;
     assert_int_equal(
-            coral_linked_red_black_tree_container_highest(&object, &item.entry),
+            coral_linked_red_black_tree_container_sorted_last(
+                    &object, &item.entry),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_CONTAINER_IS_EMPTY);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
             &object, NULL), 0);
 }
 
-static void check_higher_entry_error_on_entry_is_null(void **state) {
+static void check_sorted_next_error_on_entry_is_null(void **state) {
     assert_ptr_equal(
-            coral_linked_red_black_tree_container_higher_entry(
+            coral_linked_red_black_tree_container_sorted_next(
                     NULL, (void *) 1),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL);
 }
 
-static void check_higher_entry_error_on_out_is_null(void **state) {
+static void check_sorted_next_error_on_out_is_null(void **state) {
     assert_ptr_equal(
-            coral_linked_red_black_tree_container_higher_entry(
+            coral_linked_red_black_tree_container_sorted_next(
                     (void *) 1, NULL),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL);
 }
 
-static void check_higher_entry(void **state) {
+static void check_sorted_next(void **state) {
     struct coral_linked_red_black_tree_container object;
     assert_int_equal(coral_linked_red_black_tree_container_init(
             &object, compare), 0);
@@ -744,9 +750,9 @@ static void check_higher_entry(void **state) {
                 &object, item[i].entry), 0);
     }
     union entry other;
-    assert_int_equal(coral_linked_red_black_tree_container_lowest(
+    assert_int_equal(coral_linked_red_black_tree_container_sorted_first(
             &object, &other.entry), 0);
-    assert_int_equal(coral_linked_red_black_tree_container_higher_entry(
+    assert_int_equal(coral_linked_red_black_tree_container_sorted_next(
             other.entry, &other.entry), 0);
     assert_int_equal(*item[1].value, *other.value);
     assert_ptr_equal(item[1].entry, other.entry);
@@ -754,7 +760,7 @@ static void check_higher_entry(void **state) {
             &object, NULL), 0);
 }
 
-static void check_higher_entry_error_on_end_of_sequence(void **state) {
+static void check_sorted_next_error_on_end_of_sequence(void **state) {
     struct coral_linked_red_black_tree_container object;
     assert_int_equal(coral_linked_red_black_tree_container_init(
             &object, compare), 0);
@@ -771,31 +777,31 @@ static void check_higher_entry_error_on_end_of_sequence(void **state) {
                 &object, item[i].entry), 0);
     }
     union entry other;
-    assert_int_equal(coral_linked_red_black_tree_container_lowest(
+    assert_int_equal(coral_linked_red_black_tree_container_sorted_first(
             &object, &other.entry), 0);
     assert_int_equal(
-            coral_linked_red_black_tree_container_higher_entry(
+            coral_linked_red_black_tree_container_sorted_next(
                     other.entry, &other.entry),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
             &object, NULL), 0);
 }
 
-static void check_lower_entry_error_on_entry_is_null(void **state) {
+static void check_sorted_prev_error_on_entry_is_null(void **state) {
     assert_ptr_equal(
-            coral_linked_red_black_tree_container_lower_entry(
+            coral_linked_red_black_tree_container_sorted_prev(
                     NULL, (void *) 1),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL);
 }
 
-static void check_lower_entry_error_on_out_is_null(void **state) {
+static void check_sorted_prev_error_on_out_is_null(void **state) {
     assert_ptr_equal(
-            coral_linked_red_black_tree_container_lower_entry(
+            coral_linked_red_black_tree_container_sorted_prev(
                     (void *) 1, NULL),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OUT_IS_NULL);
 }
 
-static void check_lower_entry(void **state) {
+static void check_sorted_prev(void **state) {
     struct coral_linked_red_black_tree_container object;
     assert_int_equal(coral_linked_red_black_tree_container_init(
             &object, compare), 0);
@@ -812,9 +818,9 @@ static void check_lower_entry(void **state) {
                 &object, item[i].entry), 0);
     }
     union entry other;
-    assert_int_equal(coral_linked_red_black_tree_container_highest(
+    assert_int_equal(coral_linked_red_black_tree_container_sorted_last(
             &object, &other.entry), 0);
-    assert_int_equal(coral_linked_red_black_tree_container_lower_entry(
+    assert_int_equal(coral_linked_red_black_tree_container_sorted_prev(
             other.entry, &other.entry), 0);
     assert_int_equal(*item[1].value, *other.value);
     assert_ptr_equal(item[1].entry, other.entry);
@@ -822,7 +828,7 @@ static void check_lower_entry(void **state) {
             &object, NULL), 0);
 }
 
-static void check_lower_entry_error_on_end_of_sequence(void **state) {
+static void check_sorted_prev_error_on_end_of_sequence(void **state) {
     struct coral_linked_red_black_tree_container object;
     assert_int_equal(coral_linked_red_black_tree_container_init(
             &object, compare), 0);
@@ -839,10 +845,10 @@ static void check_lower_entry_error_on_end_of_sequence(void **state) {
                 &object, item[i].entry), 0);
     }
     union entry other;
-    assert_int_equal(coral_linked_red_black_tree_container_highest(
+    assert_int_equal(coral_linked_red_black_tree_container_sorted_last(
             &object, &other.entry), 0);
     assert_int_equal(
-            coral_linked_red_black_tree_container_lower_entry(
+            coral_linked_red_black_tree_container_sorted_prev(
                     other.entry, &other.entry),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_END_OF_SEQUENCE);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
@@ -1498,22 +1504,22 @@ int main(int argc, char *argv[]) {
             cmocka_unit_test(check_lower_error_on_out_is_null),
             cmocka_unit_test(check_lower),
             cmocka_unit_test(check_lower_error_on_entity_not_found),
-            cmocka_unit_test(check_lowest_error_on_object_is_null),
-            cmocka_unit_test(check_lowest_error_on_out_is_null),
-            cmocka_unit_test(check_lowest),
-            cmocka_unit_test(check_lowest_error_on_container_is_empty),
-            cmocka_unit_test(check_highest_error_on_object_is_null),
-            cmocka_unit_test(check_highest_error_on_out_is_null),
-            cmocka_unit_test(check_highest),
-            cmocka_unit_test(check_highest_error_on_container_is_empty),
-            cmocka_unit_test(check_higher_entry_error_on_entry_is_null),
-            cmocka_unit_test(check_higher_entry_error_on_out_is_null),
-            cmocka_unit_test(check_higher_entry),
-            cmocka_unit_test(check_higher_entry_error_on_end_of_sequence),
-            cmocka_unit_test(check_lower_entry_error_on_entry_is_null),
-            cmocka_unit_test(check_lower_entry_error_on_out_is_null),
-            cmocka_unit_test(check_lower_entry),
-            cmocka_unit_test(check_lower_entry_error_on_end_of_sequence),
+            cmocka_unit_test(check_sorted_first_error_on_object_is_null),
+            cmocka_unit_test(check_sorted_first_error_on_out_is_null),
+            cmocka_unit_test(check_sorted_first),
+            cmocka_unit_test(check_sorted_first_error_on_container_is_empty),
+            cmocka_unit_test(check_sorted_last_error_on_object_is_null),
+            cmocka_unit_test(check_sorted_last_error_on_out_is_null),
+            cmocka_unit_test(check_sorted_last),
+            cmocka_unit_test(check_sorted_last_error_on_container_is_empty),
+            cmocka_unit_test(check_sorted_next_error_on_entry_is_null),
+            cmocka_unit_test(check_sorted_next_error_on_out_is_null),
+            cmocka_unit_test(check_sorted_next),
+            cmocka_unit_test(check_sorted_next_error_on_end_of_sequence),
+            cmocka_unit_test(check_sorted_prev_error_on_entry_is_null),
+            cmocka_unit_test(check_sorted_prev_error_on_out_is_null),
+            cmocka_unit_test(check_sorted_prev),
+            cmocka_unit_test(check_sorted_prev_error_on_end_of_sequence),
             cmocka_unit_test(check_first_error_on_object_is_null),
             cmocka_unit_test(check_first_error_on_out_is_null),
             cmocka_unit_test(check_first),
