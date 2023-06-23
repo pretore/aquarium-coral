@@ -724,7 +724,7 @@ static void check_lower_error_on_entity_not_found(void **state) {
         assert_int_equal(coral_linked_red_black_tree_container_add(
                 &object, item[i].entry), 0);
     }
-    /* case: lower match */
+    /* case: non-empty container */
     assert_int_equal(
             coral_linked_red_black_tree_container_lower(
                     &object, &key, &other.entry),

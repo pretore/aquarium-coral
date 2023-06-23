@@ -337,6 +337,12 @@ static void check_ceiling_error_on_entry_not_found(void **state) {
         struct coral_red_black_tree_container_entry *entry;
         uintmax_t *value;
     } item[count];
+    /* case: empty container */
+    const uintmax_t key = UINTMAX_MAX;
+    union entry other;
+    assert_int_equal(
+            coral_red_black_tree_container_ceiling(&object, &key, &other.entry),
+            CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND);
     for (uintmax_t i = 0; i < count; i++) {
         assert_int_equal(coral_red_black_tree_container_alloc(
                 sizeof(uintmax_t), &item[i].entry), 0);
@@ -344,8 +350,7 @@ static void check_ceiling_error_on_entry_not_found(void **state) {
         assert_int_equal(coral_red_black_tree_container_add(
                 &object, item[i].entry), 0);
     }
-    const uintmax_t key = UINTMAX_MAX;
-    union entry other;
+    /* case: non-empty container */
     assert_int_equal(
             coral_red_black_tree_container_ceiling(&object, &key, &other.entry),
             CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND);
@@ -414,6 +419,12 @@ static void check_floor_error_on_entry_not_found(void **state) {
         struct coral_red_black_tree_container_entry *entry;
         uintmax_t *value;
     } item[count];
+    /* case: empty container */
+    const uintmax_t key = 0;
+    union entry other;
+    assert_int_equal(
+            coral_red_black_tree_container_floor(&object, &key, &other.entry),
+            CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND);
     for (uintmax_t i = 0; i < count; i++) {
         assert_int_equal(coral_red_black_tree_container_alloc(
                 sizeof(uintmax_t), &item[i].entry), 0);
@@ -421,8 +432,7 @@ static void check_floor_error_on_entry_not_found(void **state) {
         assert_int_equal(coral_red_black_tree_container_add(
                 &object, item[i].entry), 0);
     }
-    const uintmax_t key = 0;
-    union entry other;
+    /* case: non-empty container */
     assert_int_equal(
             coral_red_black_tree_container_floor(&object, &key, &other.entry),
             CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND);
@@ -485,6 +495,12 @@ static void check_higher_error_on_entity_not_found(void **state) {
         struct coral_red_black_tree_container_entry *entry;
         uintmax_t *value;
     } item[count];
+    /* case: empty container */
+    uintmax_t key = 0;
+    union entry other;
+    assert_int_equal(
+            coral_red_black_tree_container_higher(&object, &key, &other.entry),
+            CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND);
     for (uintmax_t i = 0; i < count; i++) {
         assert_int_equal(coral_red_black_tree_container_alloc(
                 sizeof(uintmax_t), &item[i].entry), 0);
@@ -492,8 +508,8 @@ static void check_higher_error_on_entity_not_found(void **state) {
         assert_int_equal(coral_red_black_tree_container_add(
                 &object, item[i].entry), 0);
     }
-    uintmax_t key = *item[2].value;
-    union entry other;
+    /* case: non-empty container */
+    key = *item[2].value;
     assert_int_equal(
             coral_red_black_tree_container_higher(&object, &key, &other.entry),
             CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND);
@@ -556,6 +572,12 @@ static void check_lower_error_on_entity_not_found(void **state) {
         struct coral_red_black_tree_container_entry *entry;
         uintmax_t *value;
     } item[count];
+    /* case: empty container */
+    uintmax_t key = 0;
+    union entry other;
+    assert_int_equal(
+            coral_red_black_tree_container_lower(&object, &key, &other.entry),
+            CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND);
     for (uintmax_t i = 0; i < count; i++) {
         assert_int_equal(coral_red_black_tree_container_alloc(
                 sizeof(uintmax_t), &item[i].entry), 0);
@@ -563,9 +585,7 @@ static void check_lower_error_on_entity_not_found(void **state) {
         assert_int_equal(coral_red_black_tree_container_add(
                 &object, item[i].entry), 0);
     }
-    /* case: lower match */
-    uintmax_t key = 0;
-    union entry other;
+    /* case: non-empty container */
     assert_int_equal(
             coral_red_black_tree_container_lower(&object, &key, &other.entry),
             CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND);
