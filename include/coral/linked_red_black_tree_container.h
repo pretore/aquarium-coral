@@ -4,8 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <rock.h>
 #include <sea-urchin.h>
+#include <rock.h>
 
 #define CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_SIZE_IS_ZERO \
     SEA_URCHIN_ERROR_VALUE_IS_ZERO
@@ -16,7 +16,7 @@
 #define CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_MEMORY_ALLOCATION_FAILED \
     SEA_URCHIN_ERROR_MEMORY_ALLOCATION_FAILED
 #define CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL \
-    SEA_URCHIN_ERROR_VALUE_IS_NULL
+    SEA_URCHIN_ERROR_ITEM_IS_NULL
 #define CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL \
     ROCK_RED_BLACK_TREE_ERROR_OBJECT_IS_NULL
 #define CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_COMPARE_IS_NULL \
@@ -387,9 +387,9 @@ int coral_linked_red_black_tree_container_prev(
         struct coral_linked_red_black_tree_container_entry **out);
 
 /**
- * @brief Insert item after entry.
+ * @brief Insert item at entry.
  * @param [in] object container instance.
- * @param [in] entry after which to insert.
+ * @param [in] entry at which to insert.
  * @param [in] item to insert.
  * @return On success <i>0</i>, otherwise an error code.
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL if
@@ -401,61 +401,9 @@ int coral_linked_red_black_tree_container_prev(
  * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS if
  * entry is already present in container.
  */
-int coral_linked_red_black_tree_container_insert_after(
+int coral_linked_red_black_tree_container_insert(
         struct coral_linked_red_black_tree_container *object,
         struct coral_linked_red_black_tree_container_entry *entry,
         struct coral_linked_red_black_tree_container_entry *item);
-
-/**
- * @brief Insert item before entry.
- * @param [in] object container instance.
- * @param [in] entry before which to insert.
- * @param [in] item to insert.
- * @return On success <i>0</i>, otherwise an error code.
- * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL if
- * object is <i>NULL</i>.
- * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL if entry
- * is <i>NULL</i>.
- * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ITEM_IS_NULL if item
- * is <i>NULL/i>.
- * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS if
- * entry is already present in container.
- */
-int coral_linked_red_black_tree_container_insert_before(
-        struct coral_linked_red_black_tree_container *object,
-        struct coral_linked_red_black_tree_container_entry *entry,
-        struct coral_linked_red_black_tree_container_entry *item);
-
-/**
- * @brief Insert at the end.
- * @param [in] object container instance.
- * @param [in] entry to insert at the end.
- * @return On success <i>0</i>, otherwise an error code.
- * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL if
- * object is <i>NULL</i>.
- * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL if entry
- * is <i>NULL</i>.
- * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS if
- * entry is already present in container.
- */
-int coral_linked_red_black_tree_container_append(
-        struct coral_linked_red_black_tree_container *object,
-        struct coral_linked_red_black_tree_container_entry *entry);
-
-/**
- * @brief Insert at the beginning.
- * @param [in] object container instance.
- * @param [in] entry to insert at the beginning.
- * @return On success <i>0</i>, otherwise an error code.
- * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL if
- * object is <i>NULL</i>.
- * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL if entry
- * is <i>NULL</i>.
- * @throws CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXITS if
- * entry is already present in container.
- */
-int coral_linked_red_black_tree_container_prepend(
-        struct coral_linked_red_black_tree_container *object,
-        struct coral_linked_red_black_tree_container_entry *entry);
 
 #endif /* _CORAL_LINKED_RED_BLACK_TREE_CONTAINER_H_ */

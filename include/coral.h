@@ -6,8 +6,7 @@
 #include <stdint.h>
 
 #include <coral/array_list.h>
-#include <coral/forward_queue.h>
-#include <coral/forward_stack.h>
+#include <coral/linked_list.h>
 #include <coral/linked_red_black_tree_container.h>
 #include <coral/red_black_tree_container.h>
 

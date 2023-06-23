@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(aquarium-coral VERSION 5.0.0
+project(aquarium-coral VERSION 6.0.0
         LANGUAGES C
         DESCRIPTION "Generic data structures in C")
 
@@ -21,8 +21,7 @@ include(cmake/FetchAquariumRock.cmake)
 # Sources
 set(EXPORTED_HEADER_FILES
         include/coral/array_list.h
-        include/coral/forward_queue.h
-        include/coral/forward_stack.h
+        include/coral/linked_list.h
         include/coral/linked_red_black_tree_container.h
         include/coral/red_black_tree_container.h
         include/coral.h)
@@ -30,15 +29,13 @@ set(SOURCES
         ${EXPORTED_HEADER_FILES}
         src/array_list.c
         src/coral.c
-        src/forward_queue.c
-        src/forward_stack.c
+        src/linked_list.c
         src/linked_red_black_tree_container.c
         src/red_black_tree_container.c)
 
 if(DOXYGEN_FOUND)
     set(DOXYGEN_EXTRACT_ALL YES)
-    doxygen_add_docs(${PROJECT_NAME}-documentation
-            ${EXPORTED_HEADER_FILES})
+    doxygen_add_docs(${PROJECT_NAME}-documentation ${EXPORTED_HEADER_FILES})
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -70,28 +67,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             PRIVATE
                 ${PROJECT_NAME})
     add_test(${PROJECT_NAME}-unit-test ${PROJECT_NAME}-unit-test)
-    # aquarium-coral-forward-queue-unit-test
-    add_executable(${PROJECT_NAME}-forward-queue-unit-test
-            test/test_forward_queue.c)
-    target_include_directories(${PROJECT_NAME}-forward-queue-unit-test
-            PRIVATE
-                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
-    target_link_libraries(${PROJECT_NAME}-forward-queue-unit-test
-            PRIVATE
-                ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}-forward-queue-unit-test
-            ${PROJECT_NAME}-forward-queue-unit-test)
-    # aquarium-coral-forward-stack-unit-test
-    add_executable(${PROJECT_NAME}-forward-stack-unit-test
-            test/test_forward_stack.c)
-    target_include_directories(${PROJECT_NAME}-forward-stack-unit-test
-            PRIVATE
-                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
-    target_link_libraries(${PROJECT_NAME}-forward-stack-unit-test
-            PRIVATE
-                ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}-forward-stack-unit-test
-            ${PROJECT_NAME}-forward-stack-unit-test)
     # aquarium-coral-array-list-unit-test
     add_executable(${PROJECT_NAME}-array-list-unit-test
             test/test_array_list.c)
@@ -103,6 +78,17 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
                 ${PROJECT_NAME})
     add_test(${PROJECT_NAME}-array-list-unit-test
             ${PROJECT_NAME}-array-list-unit-test)
+    # aquarium-coral-linked-list-unit-test
+    add_executable(${PROJECT_NAME}-linked-list-unit-test
+            test/test_linked_list.c)
+    target_include_directories(${PROJECT_NAME}-linked-list-unit-test
+            PRIVATE
+                "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>")
+    target_link_libraries(${PROJECT_NAME}-linked-list-unit-test
+            PRIVATE
+                ${PROJECT_NAME})
+    add_test(${PROJECT_NAME}-linked-list-unit-test
+            ${PROJECT_NAME}-linked-list-unit-test)
     # aquarium-coral-linked-red-black-tree-container-unit-test
     add_executable(${PROJECT_NAME}-linked-red-black-tree-container-unit-test
             test/test_linked_red_black_tree_container.c)

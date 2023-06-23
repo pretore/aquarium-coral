@@ -576,40 +576,7 @@ int coral_linked_red_black_tree_container_prev(
     return 0;
 }
 
-int coral_linked_red_black_tree_container_insert_after(
-        struct coral_linked_red_black_tree_container *const object,
-        struct coral_linked_red_black_tree_container_entry *const entry,
-        struct coral_linked_red_black_tree_container_entry *const item) {
-    if (!object) {
-        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL;
-    }
-    if (!entry) {
-        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL;
-    }
-    if (!item) {
-        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ITEM_IS_NULL;
-    }
-    int error;
-    struct entry *const A = rock_container_of(item, struct entry, data);
-    struct rock_red_black_tree_node *insertion_point;
-    this = object;
-    if (!(error = rock_red_black_tree_find(&object->tree,
-                                           NULL,
-                                           &A->rbt_node,
-                                           &insertion_point))) {
-        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS;
-    }
-    seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
-                           == error);
-    seagrass_required_true(!rock_red_black_tree_insert(
-            &object->tree, insertion_point, &A->rbt_node));
-    struct entry *const B = rock_container_of(entry, struct entry, data);
-    seagrass_required_true(!rock_linked_list_insert_after(
-            &B->ll_node, &A->ll_node));
-    return 0;
-}
-
-int coral_linked_red_black_tree_container_insert_before(
+int coral_linked_red_black_tree_container_insert(
         struct coral_linked_red_black_tree_container *const object,
         struct coral_linked_red_black_tree_container_entry *const entry,
         struct coral_linked_red_black_tree_container_entry *const item) {
@@ -642,54 +609,5 @@ int coral_linked_red_black_tree_container_insert_before(
     if (&B->ll_node == object->list) {
         object->list = &A->ll_node;
     }
-    return 0;
-}
-
-int coral_linked_red_black_tree_container_append(
-        struct coral_linked_red_black_tree_container *const object,
-        struct coral_linked_red_black_tree_container_entry *const entry) {
-    if (!object) {
-        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL;
-    }
-    if (!entry) {
-        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL;
-    }
-    int error;
-    if ((error = coral_linked_red_black_tree_container_add(object, entry))) {
-        seagrass_required_true(
-                CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS
-                == error);
-    }
-    return error;
-}
-
-int coral_linked_red_black_tree_container_prepend(
-        struct coral_linked_red_black_tree_container *const object,
-        struct coral_linked_red_black_tree_container_entry *const entry) {
-    if (!object) {
-        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL;
-    }
-    if (!entry) {
-        return CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL;
-    }
-    int error;
-    struct entry *const A = rock_container_of(entry, struct entry, data);
-    struct rock_red_black_tree_node *insertion_point;
-    this = object;
-    if (!(error = rock_red_black_tree_find(&object->tree,
-                                           NULL,
-                                           &A->rbt_node,
-                                           &insertion_point))) {
-        return CORAL_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS;
-    }
-    seagrass_required_true(ROCK_RED_BLACK_TREE_ERROR_NODE_NOT_FOUND
-                           == error);
-    seagrass_required_true(!rock_red_black_tree_insert(
-            &object->tree, insertion_point, &A->rbt_node));
-    if (object->list) {
-        seagrass_required_true(!rock_linked_list_insert_before(
-                object->list, &A->ll_node));
-    }
-    object->list = &A->ll_node;
     return 0;
 }

@@ -4,11 +4,11 @@ A list backed by an array.
 
 ### Use
 
-Initialise a list.
+Initialize a list.
 
 ```c
 struct coral_array_list object;
-// initialise list for uintmax_t types
+// initialize list for uintmax_t types
 seagrass_required_true(!coral_array_list_init(&object, sizeof(uintmax_t), 0));
 ```
 

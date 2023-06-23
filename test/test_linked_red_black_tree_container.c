@@ -144,9 +144,9 @@ static void check_add(void **state) {
     uintmax_t values[limit];
     for (uintmax_t i = 0; i < limit; i++) {
         int error;
+        assert_int_equal(coral_linked_red_black_tree_container_alloc(
+                sizeof(*item.value), &item.entry), 0);
         while (true) {
-            assert_int_equal(coral_linked_red_black_tree_container_alloc(
-                    sizeof(*item.value), &item.entry), 0);
             values[i] = *item.value = rand();
             if (!(error = coral_linked_red_black_tree_container_add(
                     &object, item.entry))) {
@@ -188,6 +188,106 @@ static void check_add_error_on_entry_already_exists(void **state) {
     assert_int_equal(
             coral_linked_red_black_tree_container_add(&object, item.entry),
             CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS);
+    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
+            &object, NULL), 0);
+}
+
+static void check_insert_error_on_object_is_null(void **state) {
+    assert_int_equal(
+            coral_linked_red_black_tree_container_insert(
+                    NULL, (void *) 1, (void *) 1),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL);
+}
+
+static void check_insert_error_on_entry_is_null(void **state) {
+    assert_int_equal(
+            coral_linked_red_black_tree_container_insert(
+                    (void *) 1, NULL, (void *) 1),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL);
+}
+
+static void check_insert_error_on_item_is_null(void **state) {
+    assert_int_equal(
+            coral_linked_red_black_tree_container_insert(
+                    (void *) 1, (void *) 1, NULL),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ITEM_IS_NULL);
+}
+
+static void check_insert(void **state) {
+    srand(time(NULL));
+    struct coral_linked_red_black_tree_container object;
+    assert_int_equal(coral_linked_red_black_tree_container_init(
+            &object, compare), 0);
+    union entry {
+        struct coral_linked_red_black_tree_container_entry *entry;
+        uintmax_t *value;
+    } item;
+    assert_int_equal(coral_linked_red_black_tree_container_alloc(
+            sizeof(uintmax_t), &item.entry), 0);
+    *item.value = rand();
+    assert_int_equal(coral_linked_red_black_tree_container_add(
+            &object, item.entry), 0);
+    union entry other;
+    assert_int_equal(coral_linked_red_black_tree_container_last(
+            &object, &other.entry), 0);
+    assert_int_equal(coral_linked_red_black_tree_container_alloc(
+            sizeof(uintmax_t), &item.entry), 0);
+    uintmax_t count;
+    assert_int_equal(coral_linked_red_black_tree_container_count(
+            &object, &count), 0);
+    assert_int_equal(1, count);
+    while (true) {
+        int error;
+        *item.value = rand();
+        if (!(error = coral_linked_red_black_tree_container_insert(
+                &object, other.entry, item.entry))) {
+            break;
+        }
+        assert_int_equal(
+                CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS,
+                error);
+    }
+    assert_int_equal(coral_linked_red_black_tree_container_count(
+            &object, &count), 0);
+    assert_int_equal(2, count);
+    assert_int_equal(coral_linked_red_black_tree_container_first(
+            &object, &other.entry), 0);
+    assert_ptr_equal(item.entry, other.entry);
+    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
+            &object, NULL), 0);
+}
+
+static void check_insert_error_on_entry_already_exits(void **state) {
+    srand(time(NULL));
+    struct coral_linked_red_black_tree_container object;
+    assert_int_equal(coral_linked_red_black_tree_container_init(
+            &object, compare), 0);
+    union entry {
+        struct coral_linked_red_black_tree_container_entry *entry;
+        uintmax_t *value;
+    } item;
+    assert_int_equal(coral_linked_red_black_tree_container_alloc(
+            sizeof(uintmax_t), &item.entry), 0);
+    *item.value = rand();
+    assert_int_equal(coral_linked_red_black_tree_container_add(
+            &object, item.entry), 0);
+    union entry other;
+    assert_int_equal(coral_linked_red_black_tree_container_last(
+            &object, &other.entry), 0);
+    assert_int_equal(coral_linked_red_black_tree_container_alloc(
+            sizeof(uintmax_t), &item.entry), 0);
+    uintmax_t count;
+    assert_int_equal(coral_linked_red_black_tree_container_count(
+            &object, &count), 0);
+    assert_int_equal(1, count);
+    *item.value = *other.value;
+    assert_ptr_not_equal(item.entry, other.entry);
+    assert_int_equal(
+            coral_linked_red_black_tree_container_insert(
+                    &object, other.entry, item.entry),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS);
+    assert_int_equal(coral_linked_red_black_tree_container_free(
+            item.entry), 0);
     assert_int_equal(coral_linked_red_black_tree_container_invalidate(
             &object, NULL), 0);
 }
@@ -363,6 +463,13 @@ static void check_ceiling_error_on_entry_not_found(void **state) {
         struct coral_linked_red_black_tree_container_entry *entry;
         uintmax_t *value;
     } item[count];
+    /* case: empty container */
+    const uintmax_t key = UINTMAX_MAX;
+    union entry other;
+    assert_int_equal(
+            coral_linked_red_black_tree_container_ceiling(
+                    &object, &key, &other.entry),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND);
     for (uintmax_t i = 0; i < count; i++) {
         assert_int_equal(coral_linked_red_black_tree_container_alloc(
                 sizeof(uintmax_t), &item[i].entry), 0);
@@ -370,8 +477,7 @@ static void check_ceiling_error_on_entry_not_found(void **state) {
         assert_int_equal(coral_linked_red_black_tree_container_add(
                 &object, item[i].entry), 0);
     }
-    const uintmax_t key = UINTMAX_MAX;
-    union entry other;
+    /* case: non-empty container */
     assert_int_equal(
             coral_linked_red_black_tree_container_ceiling(
                     &object, &key, &other.entry),
@@ -443,6 +549,13 @@ static void check_floor_error_on_entry_not_found(void **state) {
         struct coral_linked_red_black_tree_container_entry *entry;
         uintmax_t *value;
     } item[count];
+    /* case: empty container */
+    uintmax_t key = 0;
+    union entry other;
+    assert_int_equal(
+            coral_linked_red_black_tree_container_floor(
+                    &object, &key, &other.entry),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND);
     for (uintmax_t i = 0; i < count; i++) {
         assert_int_equal(coral_linked_red_black_tree_container_alloc(
                 sizeof(uintmax_t), &item[i].entry), 0);
@@ -450,8 +563,7 @@ static void check_floor_error_on_entry_not_found(void **state) {
         assert_int_equal(coral_linked_red_black_tree_container_add(
                 &object, item[i].entry), 0);
     }
-    const uintmax_t key = 0;
-    union entry other;
+    /* case: non-empty container */
     assert_int_equal(
             coral_linked_red_black_tree_container_floor(
                     &object, &key, &other.entry),
@@ -517,6 +629,13 @@ static void check_higher_error_on_entity_not_found(void **state) {
         struct coral_linked_red_black_tree_container_entry *entry;
         uintmax_t *value;
     } item[count];
+    /* case: empty container */
+    uintmax_t key = 0;
+    union entry other;
+    assert_int_equal(
+            coral_linked_red_black_tree_container_higher(
+                    &object, &key, &other.entry),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND);
     for (uintmax_t i = 0; i < count; i++) {
         assert_int_equal(coral_linked_red_black_tree_container_alloc(
                 sizeof(uintmax_t), &item[i].entry), 0);
@@ -524,8 +643,8 @@ static void check_higher_error_on_entity_not_found(void **state) {
         assert_int_equal(coral_linked_red_black_tree_container_add(
                 &object, item[i].entry), 0);
     }
-    uintmax_t key = *item[2].value;
-    union entry other;
+    /* case: non-empty container */
+    key = *item[2].value;
     assert_int_equal(
             coral_linked_red_black_tree_container_higher(
                     &object, &key, &other.entry),
@@ -591,6 +710,13 @@ static void check_lower_error_on_entity_not_found(void **state) {
         struct coral_linked_red_black_tree_container_entry *entry;
         uintmax_t *value;
     } item[count];
+    /* case: empty container */
+    uintmax_t key = 0;
+    union entry other;
+    assert_int_equal(
+            coral_linked_red_black_tree_container_lower(
+                    &object, &key, &other.entry),
+            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_NOT_FOUND);
     for (uintmax_t i = 0; i < count; i++) {
         assert_int_equal(coral_linked_red_black_tree_container_alloc(
                 sizeof(uintmax_t), &item[i].entry), 0);
@@ -599,8 +725,6 @@ static void check_lower_error_on_entity_not_found(void **state) {
                 &object, item[i].entry), 0);
     }
     /* case: lower match */
-    uintmax_t key = 0;
-    union entry other;
     assert_int_equal(
             coral_linked_red_black_tree_container_lower(
                     &object, &key, &other.entry),
@@ -1109,352 +1233,6 @@ static void check_prev_error_on_end_of_sequence(void **state) {
             &object, NULL), 0);
 }
 
-static void check_insert_after_error_on_object_is_null(void **state) {
-    assert_int_equal(
-            coral_linked_red_black_tree_container_insert_after(
-                    NULL, (void *) 1, (void *) 1),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL);
-}
-
-static void check_insert_after_error_on_entry_is_null(void **state) {
-    assert_int_equal(
-            coral_linked_red_black_tree_container_insert_after(
-                    (void *) 1, NULL, (void *) 1),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL);
-}
-
-static void check_insert_after_error_on_item_is_null(void **state) {
-    assert_int_equal(
-            coral_linked_red_black_tree_container_insert_after(
-                    (void *) 1, (void *) 1, NULL),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ITEM_IS_NULL);
-}
-
-static void check_insert_after(void **state) {
-    srand(time(NULL));
-    struct coral_linked_red_black_tree_container object;
-    assert_int_equal(coral_linked_red_black_tree_container_init(
-            &object, compare), 0);
-    union entry {
-        struct coral_linked_red_black_tree_container_entry *entry;
-        uintmax_t *value;
-    } item;
-    assert_int_equal(coral_linked_red_black_tree_container_alloc(
-            sizeof(uintmax_t), &item.entry), 0);
-    *item.value = rand();
-    assert_int_equal(coral_linked_red_black_tree_container_add(
-            &object, item.entry), 0);
-    union entry other;
-    assert_int_equal(coral_linked_red_black_tree_container_first(
-            &object, &other.entry), 0);
-    assert_int_equal(coral_linked_red_black_tree_container_alloc(
-            sizeof(uintmax_t), &item.entry), 0);
-    uintmax_t count;
-    assert_int_equal(coral_linked_red_black_tree_container_count(
-            &object, &count), 0);
-    assert_int_equal(1, count);
-    while (true) {
-        int error;
-        *item.value = rand();
-        if (!(error = coral_linked_red_black_tree_container_insert_after(
-                &object, other.entry, item.entry))) {
-            break;
-        }
-        assert_int_equal(
-                CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS,
-                error);
-    }
-    assert_int_equal(coral_linked_red_black_tree_container_count(
-            &object, &count), 0);
-    assert_int_equal(2, count);
-    assert_int_equal(coral_linked_red_black_tree_container_last(
-            &object, &other.entry), 0);
-    assert_ptr_equal(item.entry, other.entry);
-    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
-            &object, NULL), 0);
-}
-
-static void check_insert_after_error_on_entry_already_exits(void **state) {
-    srand(time(NULL));
-    struct coral_linked_red_black_tree_container object;
-    assert_int_equal(coral_linked_red_black_tree_container_init(
-            &object, compare), 0);
-    union entry {
-        struct coral_linked_red_black_tree_container_entry *entry;
-        uintmax_t *value;
-    } item;
-    assert_int_equal(coral_linked_red_black_tree_container_alloc(
-            sizeof(uintmax_t), &item.entry), 0);
-    *item.value = rand();
-    assert_int_equal(coral_linked_red_black_tree_container_add(
-            &object, item.entry), 0);
-    union entry other;
-    assert_int_equal(coral_linked_red_black_tree_container_first(
-            &object, &other.entry), 0);
-    assert_int_equal(coral_linked_red_black_tree_container_alloc(
-            sizeof(uintmax_t), &item.entry), 0);
-    uintmax_t count;
-    assert_int_equal(coral_linked_red_black_tree_container_count(
-            &object, &count), 0);
-    assert_int_equal(1, count);
-    *item.value = *other.value;
-    assert_ptr_not_equal(item.entry, other.entry);
-    assert_int_equal(
-            coral_linked_red_black_tree_container_insert_after(
-                    &object, other.entry, item.entry),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS);
-    assert_int_equal(coral_linked_red_black_tree_container_free(
-            item.entry), 0);
-    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
-            &object, NULL), 0);
-}
-
-static void check_insert_before_error_on_object_is_null(void **state) {
-    assert_int_equal(
-            coral_linked_red_black_tree_container_insert_before(
-                    NULL, (void *) 1, (void *) 1),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL);
-}
-
-static void check_insert_before_error_on_entry_is_null(void **state) {
-    assert_int_equal(
-            coral_linked_red_black_tree_container_insert_before(
-                    (void *) 1, NULL, (void *) 1),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL);
-}
-
-static void check_insert_before_error_on_item_is_null(void **state) {
-    assert_int_equal(
-            coral_linked_red_black_tree_container_insert_before(
-                    (void *) 1, (void *) 1, NULL),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ITEM_IS_NULL);
-}
-
-static void check_insert_before(void **state) {
-    srand(time(NULL));
-    struct coral_linked_red_black_tree_container object;
-    assert_int_equal(coral_linked_red_black_tree_container_init(
-            &object, compare), 0);
-    union entry {
-        struct coral_linked_red_black_tree_container_entry *entry;
-        uintmax_t *value;
-    } item;
-    assert_int_equal(coral_linked_red_black_tree_container_alloc(
-            sizeof(uintmax_t), &item.entry), 0);
-    *item.value = rand();
-    assert_int_equal(coral_linked_red_black_tree_container_add(
-            &object, item.entry), 0);
-    union entry other;
-    assert_int_equal(coral_linked_red_black_tree_container_last(
-            &object, &other.entry), 0);
-    assert_int_equal(coral_linked_red_black_tree_container_alloc(
-            sizeof(uintmax_t), &item.entry), 0);
-    uintmax_t count;
-    assert_int_equal(coral_linked_red_black_tree_container_count(
-            &object, &count), 0);
-    assert_int_equal(1, count);
-    while (true) {
-        int error;
-        *item.value = rand();
-        if (!(error = coral_linked_red_black_tree_container_insert_before(
-                &object, other.entry, item.entry))) {
-            break;
-        }
-        assert_int_equal(
-                CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS,
-                error);
-    }
-    assert_int_equal(coral_linked_red_black_tree_container_count(
-            &object, &count), 0);
-    assert_int_equal(2, count);
-    assert_int_equal(coral_linked_red_black_tree_container_first(
-            &object, &other.entry), 0);
-    assert_ptr_equal(item.entry, other.entry);
-    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
-            &object, NULL), 0);
-}
-
-static void check_insert_before_error_on_entry_already_exits(void **state) {
-    srand(time(NULL));
-    struct coral_linked_red_black_tree_container object;
-    assert_int_equal(coral_linked_red_black_tree_container_init(
-            &object, compare), 0);
-    union entry {
-        struct coral_linked_red_black_tree_container_entry *entry;
-        uintmax_t *value;
-    } item;
-    assert_int_equal(coral_linked_red_black_tree_container_alloc(
-            sizeof(uintmax_t), &item.entry), 0);
-    *item.value = rand();
-    assert_int_equal(coral_linked_red_black_tree_container_add(
-            &object, item.entry), 0);
-    union entry other;
-    assert_int_equal(coral_linked_red_black_tree_container_last(
-            &object, &other.entry), 0);
-    assert_int_equal(coral_linked_red_black_tree_container_alloc(
-            sizeof(uintmax_t), &item.entry), 0);
-    uintmax_t count;
-    assert_int_equal(coral_linked_red_black_tree_container_count(
-            &object, &count), 0);
-    assert_int_equal(1, count);
-    *item.value = *other.value;
-    assert_ptr_not_equal(item.entry, other.entry);
-    assert_int_equal(
-            coral_linked_red_black_tree_container_insert_before(
-                    &object, other.entry, item.entry),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS);
-    assert_int_equal(coral_linked_red_black_tree_container_free(
-            item.entry), 0);
-    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
-            &object, NULL), 0);
-}
-
-static void check_append_error_on_object_is_null(void **state) {
-    assert_int_equal(
-            coral_linked_red_black_tree_container_append(NULL, (void *) 1),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL);
-}
-
-static void check_append_error_on_entry_is_null(void **state) {
-    assert_int_equal(
-            coral_linked_red_black_tree_container_append((void *) 1, NULL),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL);
-}
-
-static void check_append(void **state) {
-    srand(time(NULL));
-    struct coral_linked_red_black_tree_container object;
-    assert_int_equal(coral_linked_red_black_tree_container_init(
-            &object, compare), 0);
-    union entry {
-        struct coral_linked_red_black_tree_container_entry *entry;
-        uintmax_t *value;
-    } item;
-    const uintmax_t limit = 5;
-    uintmax_t values[limit];
-    for (uintmax_t i = 0; i < limit; i++) {
-        int error;
-        while (true) {
-            assert_int_equal(coral_linked_red_black_tree_container_alloc(
-                    sizeof(*item.value), &item.entry), 0);
-            values[i] = *item.value = rand();
-            if (!(error = coral_linked_red_black_tree_container_append(
-                    &object, item.entry))) {
-                break;
-            }
-            assert_int_equal(
-                    CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS,
-                    error);
-        }
-    }
-    uintmax_t count;
-    assert_int_equal(coral_linked_red_black_tree_container_count(
-            &object, &count), 0);
-    assert_int_equal(limit, count);
-    assert_int_equal(coral_linked_red_black_tree_container_first(
-            &object, &item.entry), 0);
-    for (uintmax_t i = 0; i < limit; i++) {
-        assert_int_equal(*item.value, values[i]);
-        coral_linked_red_black_tree_container_next(
-                &object, item.entry, &item.entry);
-    }
-    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
-            &object, NULL), 0);
-}
-
-static void check_append_error_on_entry_already_exists(void **state) {
-    struct coral_linked_red_black_tree_container object;
-    assert_int_equal(coral_linked_red_black_tree_container_init(
-            &object, compare), 0);
-    union entry {
-        struct coral_linked_red_black_tree_container_entry *entry;
-        uintmax_t *value;
-    } item;
-    assert_int_equal(coral_linked_red_black_tree_container_alloc(
-            sizeof(*item.value), &item.entry), 0);
-    *item.value = 0;
-    assert_int_equal(coral_linked_red_black_tree_container_append(
-            &object, item.entry), 0);
-    assert_int_equal(
-            coral_linked_red_black_tree_container_append(&object, item.entry),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS);
-    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
-            &object, NULL), 0);
-}
-
-static void check_prepend_error_on_object_is_null(void **state) {
-    assert_int_equal(
-            coral_linked_red_black_tree_container_prepend(NULL, (void *) 1),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_OBJECT_IS_NULL);
-}
-
-static void check_prepend_error_on_entry_is_null(void **state) {
-    assert_int_equal(
-            coral_linked_red_black_tree_container_prepend((void *) 1, NULL),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_IS_NULL);
-}
-
-static void check_prepend(void **state) {
-    srand(time(NULL));
-    struct coral_linked_red_black_tree_container object;
-    assert_int_equal(coral_linked_red_black_tree_container_init(
-            &object, compare), 0);
-    union entry {
-        struct coral_linked_red_black_tree_container_entry *entry;
-        uintmax_t *value;
-    } item;
-    const uintmax_t limit = 5;
-    uintmax_t values[limit];
-    for (uintmax_t i = 0; i < limit; i++) {
-        int error;
-        while (true) {
-            assert_int_equal(coral_linked_red_black_tree_container_alloc(
-                    sizeof(*item.value), &item.entry), 0);
-            values[i] = *item.value = rand();
-            if (!(error = coral_linked_red_black_tree_container_prepend(
-                    &object, item.entry))) {
-                break;
-            }
-            assert_int_equal(
-                    CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS,
-                    error);
-        }
-    }
-    uintmax_t count;
-    assert_int_equal(coral_linked_red_black_tree_container_count(
-            &object, &count), 0);
-    assert_int_equal(limit, count);
-    assert_int_equal(coral_linked_red_black_tree_container_first(
-            &object, &item.entry), 0);
-    for (uintmax_t i = limit - 1; i < limit; i--) {
-        assert_int_equal(*item.value, values[i]);
-        coral_linked_red_black_tree_container_next(
-                &object, item.entry, &item.entry);
-    }
-    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
-            &object, NULL), 0);
-}
-
-static void check_prepend_error_on_entry_already_exists(void **state) {
-    struct coral_linked_red_black_tree_container object;
-    assert_int_equal(coral_linked_red_black_tree_container_init(
-            &object, compare), 0);
-    union entry {
-        struct coral_linked_red_black_tree_container_entry *entry;
-        uintmax_t *value;
-    } item;
-    assert_int_equal(coral_linked_red_black_tree_container_alloc(
-            sizeof(*item.value), &item.entry), 0);
-    *item.value = 0;
-    assert_int_equal(coral_linked_red_black_tree_container_prepend(
-            &object, item.entry), 0);
-    assert_int_equal(
-            coral_linked_red_black_tree_container_prepend(&object, item.entry),
-            CORAL_LINKED_RED_BLACK_TREE_CONTAINER_ERROR_ENTRY_ALREADY_EXISTS);
-    assert_int_equal(coral_linked_red_black_tree_container_invalidate(
-            &object, NULL), 0);
-}
-
 int main(int argc, char *argv[]) {
     const struct CMUnitTest tests[] = {
             cmocka_unit_test(check_free_error_on_entry_is_null),
@@ -1476,6 +1254,11 @@ int main(int argc, char *argv[]) {
             cmocka_unit_test(check_add_error_on_entry_is_null),
             cmocka_unit_test(check_add),
             cmocka_unit_test(check_add_error_on_entry_already_exists),
+            cmocka_unit_test(check_insert_error_on_object_is_null),
+            cmocka_unit_test(check_insert_error_on_entry_is_null),
+            cmocka_unit_test(check_insert_error_on_item_is_null),
+            cmocka_unit_test(check_insert),
+            cmocka_unit_test(check_insert_error_on_entry_already_exits),
             cmocka_unit_test(check_remove_error_on_object_is_null),
             cmocka_unit_test(check_remove_error_on_entry_is_null),
             cmocka_unit_test(check_remove),
@@ -1533,28 +1316,11 @@ int main(int argc, char *argv[]) {
             cmocka_unit_test(check_next_error_on_out_is_null),
             cmocka_unit_test(check_next),
             cmocka_unit_test(check_next_error_on_end_of_sequence),
+            cmocka_unit_test(check_prev_error_on_object_is_null),
             cmocka_unit_test(check_prev_error_on_entry_is_null),
             cmocka_unit_test(check_prev_error_on_out_is_null),
             cmocka_unit_test(check_prev),
             cmocka_unit_test(check_prev_error_on_end_of_sequence),
-            cmocka_unit_test(check_insert_after_error_on_object_is_null),
-            cmocka_unit_test(check_insert_after_error_on_entry_is_null),
-            cmocka_unit_test(check_insert_after_error_on_item_is_null),
-            cmocka_unit_test(check_insert_after),
-            cmocka_unit_test(check_insert_after_error_on_entry_already_exits),
-            cmocka_unit_test(check_insert_before_error_on_object_is_null),
-            cmocka_unit_test(check_insert_before_error_on_entry_is_null),
-            cmocka_unit_test(check_insert_before_error_on_item_is_null),
-            cmocka_unit_test(check_insert_before),
-            cmocka_unit_test(check_insert_before_error_on_entry_already_exits),
-            cmocka_unit_test(check_append_error_on_object_is_null),
-            cmocka_unit_test(check_append_error_on_entry_is_null),
-            cmocka_unit_test(check_append),
-            cmocka_unit_test(check_append_error_on_entry_already_exists),
-            cmocka_unit_test(check_prepend_error_on_object_is_null),
-            cmocka_unit_test(check_prepend_error_on_entry_is_null),
-            cmocka_unit_test(check_prepend),
-            cmocka_unit_test(check_prepend_error_on_entry_already_exists),
     };
     //cmocka_set_message_output(CM_OUTPUT_XML);
     return cmocka_run_group_tests(tests, NULL, NULL);

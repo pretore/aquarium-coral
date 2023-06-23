@@ -4,7 +4,7 @@ Container backed by a red black tree and also maintaining insertion order.
 
 ### Use
 
-Initialise container.
+Initialize container.
 
 ```c
 // compare function to say in which order uintmax_t are to be stored
@@ -38,7 +38,7 @@ union item {
 // allocate memory for a new entry
 seagrass_required_true(!coral_linked_red_black_tree_container_alloc(
         sizeof(*ptr.value), &ptr.entry));
-// initialise entry to a random value
+// initialize entry to a random value
 *ptr.value = rand(); 
 // add entry to container
 seagrass_required_true(!coral_linked_red_black_tree_container_add(
