@@ -1,6 +1,7 @@
 # aquarium-coral
 
 ![main](https://github.com/pretore/aquarium-coral/actions/workflows/cmake.yml/badge.svg?branch=main)
+[![codecov](https://codecov.io/github/pretore/aquarium-coral/branch/main/graph/badge.svg?token=L7EI47DQAL)](https://codecov.io/github/pretore/aquarium-coral)
 
 Generic data structures in C.
 
